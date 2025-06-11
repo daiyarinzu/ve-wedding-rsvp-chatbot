@@ -2,6 +2,37 @@ const form = document.getElementById("chat-form");
 const input = document.getElementById("user-input");
 const chatBox = document.getElementById("chat-box");
 const popSound = new Audio("pop.mp3");
+const guestNames = [];
+let sessionEnded = false;
+
+function getRandomItem(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function isValidName(name) {
+  const trimmed = name.trim();
+
+  // Always allow these real names
+  const allowList = ["kerthyllaine", "zaynab faith kerthyllaine"];
+  if (allowList.includes(trimmed.toLowerCase())) return true;
+
+  if (trimmed.length < 2 || trimmed.length > 30) return false;
+  if (!/[a-zA-Z]/.test(trimmed)) return false;
+
+  const vowels = (trimmed.match(/[aeiou]/gi) || []).length;
+  const consonants = (trimmed.match(/[bcdfghjklmnpqrstvwxyz]/gi) || []).length;
+
+  if (vowels === 0 || consonants === 0) return false;
+
+  // Avoid 4+ vowels or consonants in a row
+  if (/(?:[aeiou]{4,}|[bcdfghjklmnpqrstvwxyz]{4,})/i.test(trimmed))
+    return false;
+
+  // Avoid fully lowercase, no space names like "oiuyrewq"
+  if (trimmed === trimmed.toLowerCase() && !trimmed.includes(" ")) return false;
+
+  return true;
+}
 
 // Format timestamp (e.g. 03:45 PM)
 function formatTime(date) {
@@ -87,6 +118,14 @@ form.addEventListener("submit", (e) => {
   addMessage(userText, "user");
   input.value = "";
 
+  // If session already ended, reject any more name entries
+  if (sessionEnded || !didClickRSVP()) {
+    botReplyWithTyping(
+      "Hi! To RSVP, please click the RSVP button on our website first so we can properly record your names. 😊"
+    );
+    return;
+  }
+
   setTimeout(() => {
     respond(userText);
   }, 600);
@@ -96,15 +135,60 @@ form.addEventListener("submit", (e) => {
 function respond(userText) {
   const lower = userText.toLowerCase();
 
-  if (lower.includes("hello")) {
-    botReplyWithTyping("Hi there! May I know your name?");
-  } else if (lower.includes("no")) {
-    botReplyWithTyping(
-      "Thanks for letting us know! Feel free to RSVP anytime."
-    );
-  } else {
-    botReplyWithTyping("Thank you! We’ll save that info for the RSVP.");
+  // Handle "no" to end session
+  if (lower === "no" || lower === "nope" || lower === "none") {
+    if (guestNames.length === 0) {
+      botReplyWithTyping("No problem! Let us know if you change your mind.");
+    } else {
+      const finalList = guestNames.map((name) => `• ${name}`).join("<br>");
+      const message = `🎉 Thank you! Here's the list of names we’ve recorded:<br><br>${finalList}<br><br>We look forward to seeing you! 💖`;
+      botReplyWithTyping(message);
+      sessionEnded = true; // end session here
+    }
+    return;
   }
+
+  // Check if the input is a valid name
+  if (!isValidName(userText)) {
+    botReplyWithTyping(
+      "Hmm... that doesn’t look like a valid name. Could you double-check and try again? 😊"
+    );
+    return;
+  }
+
+  // Add valid name
+  guestNames.push(userText);
+
+  const acknowledgments = [
+    "✅ Got it!",
+    "👍 Name saved.",
+    "📌 Added.",
+    "👌 Thanks!",
+    "📝 Noted!",
+  ];
+
+  const prompts = [
+    "Would you like to add another name?",
+    "Want to add someone else?",
+    "Anyone else you'd like to include?",
+    "Shall we add another guest?",
+    "Feel free to share more names!",
+  ];
+
+  const instructions = [
+    `If you're done, just reply "No".`,
+    `When you're finished, type "No".`,
+    `If no more guests, simply reply "No".`,
+    `Reply "No" when you're done adding names.`,
+    `Done? Just type "No".`,
+  ];
+
+  const finalReply =
+    `${getRandomItem(acknowledgments)}<br>` +
+    `${getRandomItem(prompts)}<br>` +
+    `${getRandomItem(instructions)}`;
+
+  botReplyWithTyping(finalReply);
 }
 
 // Check if RSVP was clicked (URL has ?rsvp=true)
