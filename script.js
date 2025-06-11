@@ -110,7 +110,8 @@ function respond(userText) {
 // Check if RSVP was clicked (URL has ?rsvp=true)
 function didClickRSVP() {
   const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get("rsvp") === "true";
+  const value = urlParams.get("rsvp");
+  return value === "1" || value === "true";
 }
 
 // Start chat on page load
