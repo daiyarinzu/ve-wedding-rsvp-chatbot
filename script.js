@@ -190,12 +190,11 @@ function respond(userText) {
     return;
   }
 
-  // Step 1: Check Google Sheet for duplicates using POST
-  fetch(GOOGLE_SCRIPT_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "check", name: userText }),
-  })
+  // Step 1: Check Google Sheet for duplicates
+  const checkUrl = `${GOOGLE_SCRIPT_URL}?action=check&name=${encodeURIComponent(
+    userText
+  )}`;
+  fetch(checkUrl)
     .then((res) => res.json())
     .then((data) => {
       if (data.exists) {
@@ -203,17 +202,14 @@ function respond(userText) {
         return;
       }
 
-      // Step 2: Save to local guest list
       guestNames.push(userText);
 
-      // Step 3: Save to Google Sheet
-      fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "save", name: userText }),
-      });
+      // Step 2: Save to Google Sheet
+      const saveUrl = `${GOOGLE_SCRIPT_URL}?action=save&name=${encodeURIComponent(
+        userText
+      )}`;
+      fetch(saveUrl);
 
-      // Step 4: Reply with success message
       const acknowledgments = [
         "✅ Got it!",
         "👍 Name saved.",
