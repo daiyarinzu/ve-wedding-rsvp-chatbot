@@ -9,7 +9,7 @@ let idleStage = 0;
 
 // ✅ Your Google Apps Script URL here
 const GOOGLE_SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbxs9dO56Yiwg6tSzQhHeuIfyKpAGm0vfmVMV8SvsPA_nBL34bGZ3S-zBp4R4Vicrr4heQ/exec";
+  "https://script.google.com/macros/s/AKfycbw-ArbXtdtcw67wBkhVC_-npFVzhKgT3SU6ZSmnjLDn_zw-LdgqPGvgrjqtRs-EInY2Qg/exec";
 
 function getRandomItem(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
@@ -190,7 +190,7 @@ function respond(userText) {
     return;
   }
 
-  // Step 1: Check Google Sheet for duplicates
+  // ✅ Send GET request to check if name exists in Google Sheet
   const checkUrl = `${GOOGLE_SCRIPT_URL}?action=check&name=${encodeURIComponent(
     userText
   )}`;
@@ -204,7 +204,7 @@ function respond(userText) {
 
       guestNames.push(userText);
 
-      // Step 2: Save to Google Sheet
+      // ✅ Save using GET request
       const saveUrl = `${GOOGLE_SCRIPT_URL}?action=save&name=${encodeURIComponent(
         userText
       )}`;
@@ -240,7 +240,7 @@ function respond(userText) {
       botReplyWithTyping(finalReply);
     })
     .catch((err) => {
-      console.error(err);
+      console.error("❌ FETCH ERROR:", err);
       botReplyWithTyping("⚠️ Something went wrong. Please try again later.");
     });
 }
