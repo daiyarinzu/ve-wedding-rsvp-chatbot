@@ -4,9 +4,34 @@ const chatBox = document.getElementById("chat-box");
 const popSound = new Audio("pop.mp3");
 const guestNames = [];
 let sessionEnded = false;
+let idleTimer = null;
+let idleStage = 0;
 
 function getRandomItem(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function resetIdleTimer() {
+  clearTimeout(idleTimer);
+
+  idleTimer = setTimeout(
+    () => {
+      if (idleStage === 0) {
+        botReplyWithTyping(
+          `👋 Just checking in — are you still there? You can keep adding names or reply "No" to finish.`
+        );
+        idleStage = 1;
+        resetIdleTimer(); // Start next timeout
+      } else if (idleStage === 1) {
+        botReplyWithTyping(
+          `⏱️ Looks like you're away. We'll end this RSVP session for now. You can start again anytime. 😊`
+        );
+        sessionEnded = true;
+        idleStage = 0;
+      }
+    },
+    idleStage === 0 ? 2 * 60 * 1000 : 3 * 60 * 1000
+  ); // 2 mins then 3 mins
 }
 
 function isValidName(name) {
@@ -128,6 +153,8 @@ form.addEventListener("submit", (e) => {
 
   setTimeout(() => {
     respond(userText);
+    resetIdleTimer();
+    idleStage = 0; // User is active again
   }, 600);
 });
 
@@ -137,13 +164,23 @@ function respond(userText) {
 
   // Handle "no" to end session
   if (lower === "no" || lower === "nope" || lower === "none") {
+    if (idleStage === 1 && guestNames.length === 0) {
+      botReplyWithTyping("No problem! Let us know if you change your mind. 😊");
+      sessionEnded = true;
+      idleStage = 0;
+      clearTimeout(idleTimer);
+      return;
+    }
+
     if (guestNames.length === 0) {
-      botReplyWithTyping("No problem! Let us know if you change your mind.");
+      botReplyWithTyping("No problem! Let us know if you change your mind. 😊");
     } else {
       const finalList = guestNames.map((name) => `• ${name}`).join("<br>");
       const message = `🎉 Thank you! Here's the list of names we’ve recorded:<br><br>${finalList}<br><br>We look forward to seeing you! 💖`;
       botReplyWithTyping(message);
       sessionEnded = true; // end session here
+      idleStage = 0;
+      clearTimeout(idleTimer);
     }
     return;
   }
@@ -156,8 +193,32 @@ function respond(userText) {
     return;
   }
 
+  // Check for duplicates (case-insensitive)
+  const nameExists = guestNames.some(
+    (name) => name.toLowerCase() === userText.toLowerCase()
+  );
+
+  if (nameExists) {
+    botReplyWithTyping(
+      "🚫 That name is already on the list! Please add someone else."
+    );
+    return;
+  }
+
   // Add valid name
   guestNames.push(userText);
+
+  // Send to Google Sheets
+  fetch(
+    "https://script.google.com/macros/s/AKfycbwTaIPATzEe0FEdl7VR13HgMCkLwLHRpYegotDMC2Z5/dev",
+    {
+      method: "POST",
+      body: JSON.stringify({ name: userText }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
 
   const acknowledgments = [
     "✅ Got it!",
@@ -205,6 +266,11 @@ window.onload = () => {
       `💌 Greetings!\n\nYou are invited to the wedding of Voughn and Emelyn.\n\nPlease let us know if you can come.\nJust reply with your names so we can save your seats and prepare your table.\n\nThank you, and we’re excited to celebrate this special day with you! 💕`,
       1500
     );
+
+    // Start idle timer after greeting
+    setTimeout(() => {
+      resetIdleTimer();
+    }, 1600); // Slightly longer than typing delay
   } else {
     botReplyWithTyping(
       `Hi! To RSVP, please click the RSVP button on our website first so we can properly record your names. 😊`,
