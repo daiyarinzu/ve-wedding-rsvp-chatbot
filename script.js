@@ -190,11 +190,12 @@ function respond(userText) {
     return;
   }
 
-  // ✅ Send GET request to check if name exists in Google Sheet
-  const checkUrl = `${GOOGLE_SCRIPT_URL}?action=check&name=${encodeURIComponent(
-    userText
-  )}`;
-  fetch(checkUrl)
+  // ✅ POST to check
+  fetch(GOOGLE_SCRIPT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "check", name: userText }),
+  })
     .then((res) => res.json())
     .then((data) => {
       if (data.exists) {
@@ -204,11 +205,12 @@ function respond(userText) {
 
       guestNames.push(userText);
 
-      // ✅ Save using GET request
-      const saveUrl = `${GOOGLE_SCRIPT_URL}?action=save&name=${encodeURIComponent(
-        userText
-      )}`;
-      fetch(saveUrl);
+      // ✅ POST to save
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "save", name: userText }),
+      });
 
       const acknowledgments = [
         "✅ Got it!",
