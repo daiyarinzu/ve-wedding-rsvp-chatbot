@@ -190,11 +190,12 @@ function respond(userText) {
     return;
   }
 
-  // Step 1: Check Google Sheet for duplicates using GET
-  const checkUrl = `${"https://script.google.com/macros/s/AKfycbxs9dO56Yiwg6tSzQhHeuIfyKpAGm0vfmVMV8SvsPA_nBL34bGZ3S-zBp4R4Vicrr4heQ/exec"}?action=check&name=${encodeURIComponent(
-    userText
-  )}`;
-  fetch(checkUrl)
+  // Step 1: Check Google Sheet for duplicates using POST
+  fetch(GOOGLE_SCRIPT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "check", name: userText }),
+  })
     .then((res) => res.json())
     .then((data) => {
       if (data.exists) {
@@ -206,14 +207,11 @@ function respond(userText) {
       guestNames.push(userText);
 
       // Step 3: Save to Google Sheet
-      fetch(
-        "https://script.google.com/macros/s/AKfycbxs9dO56Yiwg6tSzQhHeuIfyKpAGm0vfmVMV8SvsPA_nBL34bGZ3S-zBp4R4Vicrr4heQ/exec",
-        {
-          method: "POST",
-          body: JSON.stringify({ action: "save", name: userText }),
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "save", name: userText }),
+      });
 
       // Step 4: Reply with success message
       const acknowledgments = [
