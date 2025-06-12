@@ -213,52 +213,71 @@ function respond(userText) {
     return;
   }
 
-  // Add valid name
-  guestNames.push(userText);
-
-  // Send to Google Sheets
+  // Step 1: Check if name already exists on Google Sheet
   fetch(
     "https://script.google.com/macros/s/AKfycbygESvO7L5It0tL-Sx4e9LFnV9u5-8kL7fL6CnhQM6O9c__xNj5CJ1CsBs8TfCIFxla7g/exec",
     {
       method: "POST",
-      mode: "no-cors", // ✅ This skips preflight
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name: userText }),
+      body: JSON.stringify({ action: "check", name: userText }),
+      headers: { "Content-Type": "application/json" },
     }
-  );
+  )
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.exists) {
+        botReplyWithTyping("🚫 That guest has already RSVP’d. Thank you!");
+        return;
+      }
 
-  const acknowledgments = [
-    "✅ Got it!",
-    "👍 Name saved.",
-    "📌 Added.",
-    "👌 Thanks!",
-    "📝 Noted!",
-  ];
+      // Step 2: Add valid name to guestNames
+      guestNames.push(userText);
 
-  const prompts = [
-    "Would you like to add another name?",
-    "Want to add someone else?",
-    "Anyone else you'd like to include?",
-    "Shall we add another guest?",
-    "Feel free to share more names!",
-  ];
+      // Step 3: Save to Google Sheets
+      fetch(
+        "https://script.google.com/macros/s/AKfycbygESvO7L5It0tL-Sx4e9LFnV9u5-8kL7fL6CnhQM6O9c__xNj5CJ1CsBs8TfCIFxla7g/exec",
+        {
+          method: "POST",
+          body: JSON.stringify({ action: "save", name: userText }),
+          headers: { "Content-Type": "application/json" },
+        }
+      );
 
-  const instructions = [
-    `If you're done, just reply "No".`,
-    `When you're finished, type "No".`,
-    `If no more guests, simply reply "No".`,
-    `Reply "No" when you're done adding names.`,
-    `Done? Just type "No".`,
-  ];
+      // Step 4: Send bot reply
+      const acknowledgments = [
+        "✅ Got it!",
+        "👍 Name saved.",
+        "📌 Added.",
+        "👌 Thanks!",
+        "📝 Noted!",
+      ];
 
-  const finalReply =
-    `${getRandomItem(acknowledgments)}<br>` +
-    `${getRandomItem(prompts)}<br>` +
-    `${getRandomItem(instructions)}`;
+      const prompts = [
+        "Would you like to add another name?",
+        "Want to add someone else?",
+        "Anyone else you'd like to include?",
+        "Shall we add another guest?",
+        "Feel free to share more names!",
+      ];
 
-  botReplyWithTyping(finalReply);
+      const instructions = [
+        `If you're done, just reply "No".`,
+        `When you're finished, type "No".`,
+        `If no more guests, simply reply "No".`,
+        `Reply "No" when you're done adding names.`,
+        `Done? Just type "No".`,
+      ];
+
+      const finalReply =
+        `${getRandomItem(acknowledgments)}<br>` +
+        `${getRandomItem(prompts)}<br>` +
+        `${getRandomItem(instructions)}`;
+
+      botReplyWithTyping(finalReply);
+    })
+    .catch((err) => {
+      console.error(err);
+      botReplyWithTyping("⚠️ Something went wrong. Please try again later.");
+    });
 }
 
 // Check if RSVP was clicked (URL has ?rsvp=true)
