@@ -215,7 +215,7 @@ function respond(userText) {
 
   // Step 1: Check if name already exists on Google Sheet
   fetch(
-    "https://script.google.com/macros/s/AKfycbygESvO7L5It0tL-Sx4e9LFnV9u5-8kL7fL6CnhQM6O9c__xNj5CJ1CsBs8TfCIFxla7g/exec",
+    "https://script.google.com/macros/s/AKfycbxs9dO56Yiwg6tSzQhHeuIfyKpAGm0vfmVMV8SvsPA_nBL34bGZ3S-zBp4R4Vicrr4heQ/exec",
     {
       method: "POST",
       body: JSON.stringify({ action: "check", name: userText }),
@@ -234,7 +234,7 @@ function respond(userText) {
 
       // Step 3: Save to Google Sheets
       fetch(
-        "https://script.google.com/macros/s/AKfycbygESvO7L5It0tL-Sx4e9LFnV9u5-8kL7fL6CnhQM6O9c__xNj5CJ1CsBs8TfCIFxla7g/exec",
+        "https://script.google.com/macros/s/AKfycbxs9dO56Yiwg6tSzQhHeuIfyKpAGm0vfmVMV8SvsPA_nBL34bGZ3S-zBp4R4Vicrr4heQ/exec",
         {
           method: "POST",
           body: JSON.stringify({ action: "save", name: userText }),
