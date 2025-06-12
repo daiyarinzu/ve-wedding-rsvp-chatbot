@@ -121,8 +121,12 @@ function addMessage(text, sender = "bot", isTyping = false) {
   chatBox.scrollTop = chatBox.scrollHeight;
 
   if (!isTyping && sender === "bot") {
-    popSound.currentTime = 0;
-    popSound.play();
+    try {
+      popSound.currentTime = 0;
+      popSound.play();
+    } catch (err) {
+      // Ignore browser restrictions
+    }
   }
 
   return wrapper;
