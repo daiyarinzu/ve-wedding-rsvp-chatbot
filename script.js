@@ -125,7 +125,7 @@ function addMessage(text, sender = "bot", isTyping = false) {
       popSound.currentTime = 0;
       popSound.play();
     } catch (err) {
-      // Ignore browser restrictions
+      // Ignore autoplay restrictions
     }
   }
 
@@ -218,7 +218,7 @@ function respond(userText) {
 
   // Send to Google Sheets
   fetch(
-    "https://script.google.com/macros/s/AKfycbwnApJHpOBJgFN_wHiJnybaX8C93G3yopsmuOi7Ks3nXmcJl2PZyK0sBkg1CWpIs2kJ7Q/exec",
+    "https://script.google.com/macros/s/AKfycbwBNa7qcOHc3JxlPWNxV8TivDrirTVAYwzsvh_BMMwPUyiZzaM1a3JgVg29mLcsRIdGAg/exec",
     {
       method: "POST",
       body: JSON.stringify({ name: userText }),
