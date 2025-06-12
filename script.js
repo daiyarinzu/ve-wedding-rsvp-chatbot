@@ -12,6 +12,9 @@ function getRandomItem(arr) {
 }
 
 function resetIdleTimer() {
+  // ✅ Don't start idle timer if session has ended
+  if (sessionEnded) return;
+
   clearTimeout(idleTimer);
 
   idleTimer = setTimeout(
@@ -28,6 +31,7 @@ function resetIdleTimer() {
         );
         sessionEnded = true;
         idleStage = 0;
+        clearTimeout(idleTimer); // ✅ Prevent any remaining timers
       }
     },
     idleStage === 0 ? 2 * 60 * 1000 : 3 * 60 * 1000
