@@ -221,10 +221,11 @@ function respond(userText) {
     "https://script.google.com/macros/s/AKfycbygESvO7L5It0tL-Sx4e9LFnV9u5-8kL7fL6CnhQM6O9c__xNj5CJ1CsBs8TfCIFxla7g/exec",
     {
       method: "POST",
-      body: JSON.stringify({ name: userText }),
+      mode: "no-cors", // ✅ This skips preflight
       headers: {
         "Content-Type": "application/json",
       },
+      body: JSON.stringify({ name: userText }),
     }
   );
 
