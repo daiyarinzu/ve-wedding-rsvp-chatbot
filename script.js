@@ -218,7 +218,7 @@ function respond(userText) {
 
   // Send to Google Sheets
   fetch(
-    "https://script.google.com/macros/s/AKfycbwBNa7qcOHc3JxlPWNxV8TivDrirTVAYwzsvh_BMMwPUyiZzaM1a3JgVg29mLcsRIdGAg/exec",
+    "https://script.google.com/macros/s/AKfycbygESvO7L5It0tL-Sx4e9LFnV9u5-8kL7fL6CnhQM6O9c__xNj5CJ1CsBs8TfCIFxla7g/exec",
     {
       method: "POST",
       body: JSON.stringify({ name: userText }),
