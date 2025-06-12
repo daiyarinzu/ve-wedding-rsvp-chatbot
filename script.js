@@ -7,14 +7,16 @@ let sessionEnded = false;
 let idleTimer = null;
 let idleStage = 0;
 
+// ✅ Your Google Apps Script URL here
+const GOOGLE_SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycbxs9dO56Yiwg6tSzQhHeuIfyKpAGm0vfmVMV8SvsPA_nBL34bGZ3S-zBp4R4Vicrr4heQ/exec";
+
 function getRandomItem(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
 function resetIdleTimer() {
-  // ✅ Don't start idle timer if session has ended
   if (sessionEnded) return;
-
   clearTimeout(idleTimer);
 
   idleTimer = setTimeout(
@@ -24,24 +26,22 @@ function resetIdleTimer() {
           `👋 Just checking in — are you still there? You can keep adding names or reply "No" to finish.`
         );
         idleStage = 1;
-        resetIdleTimer(); // Start next timeout
+        resetIdleTimer();
       } else if (idleStage === 1) {
         botReplyWithTyping(
           `⏱️ Looks like you're away. We'll end this RSVP session for now. You can start again anytime. 😊`
         );
         sessionEnded = true;
         idleStage = 0;
-        clearTimeout(idleTimer); // ✅ Prevent any remaining timers
+        clearTimeout(idleTimer);
       }
     },
     idleStage === 0 ? 2 * 60 * 1000 : 3 * 60 * 1000
-  ); // 2 mins then 3 mins
+  );
 }
 
 function isValidName(name) {
   const trimmed = name.trim();
-
-  // Always allow these real names
   const allowList = ["kerthyllaine", "zaynab faith kerthyllaine"];
   if (allowList.includes(trimmed.toLowerCase())) return true;
 
@@ -52,45 +52,34 @@ function isValidName(name) {
   const consonants = (trimmed.match(/[bcdfghjklmnpqrstvwxyz]/gi) || []).length;
 
   if (vowels === 0 || consonants === 0) return false;
-
-  // Avoid 4+ vowels or consonants in a row
   if (/(?:[aeiou]{4,}|[bcdfghjklmnpqrstvwxyz]{4,})/i.test(trimmed))
     return false;
-
-  // Avoid fully lowercase, no space names like "oiuyrewq"
   if (trimmed === trimmed.toLowerCase() && !trimmed.includes(" ")) return false;
 
   return true;
 }
 
-// Format timestamp (e.g. 03:45 PM)
 function formatTime(date) {
   const options = { hour: "2-digit", minute: "2-digit" };
   return date.toLocaleTimeString([], options);
 }
 
-// Add message to chat box (supports avatars, pop sound, typing dots, and timestamps)
 function addMessage(text, sender = "bot", isTyping = false) {
   const wrapper = document.createElement("div");
   const time = formatTime(new Date());
 
   const messageWrapper = document.createElement("div");
   messageWrapper.classList.add("message-wrapper");
-  if (sender === "user") {
-    messageWrapper.classList.add("user-wrapper");
-  } else {
-    messageWrapper.classList.add("bot-wrapper");
-  }
+  messageWrapper.classList.add(
+    sender === "user" ? "user-wrapper" : "bot-wrapper"
+  );
 
   const messageBubble = document.createElement("div");
   messageBubble.classList.add("message", sender);
 
   if (isTyping) {
     messageBubble.classList.add("typing");
-    messageBubble.innerHTML = `
-      <div class="typing-dots">
-        <span></span><span></span><span></span>
-      </div>`;
+    messageBubble.innerHTML = `<div class="typing-dots"><span></span><span></span><span></span></div>`;
   } else {
     messageBubble.innerHTML = text.replace(/\n/g, "<br>");
   }
@@ -124,25 +113,20 @@ function addMessage(text, sender = "bot", isTyping = false) {
     try {
       popSound.currentTime = 0;
       popSound.play();
-    } catch (err) {
-      // Ignore autoplay restrictions
-    }
+    } catch (err) {}
   }
 
   return wrapper;
 }
 
-// Bot types, then replies
 function botReplyWithTyping(text, delay = 1000) {
-  const typingBubble = addMessage("", "bot", true); // Typing bubble (no sound)
-
+  const typingBubble = addMessage("", "bot", true);
   setTimeout(() => {
-    typingBubble.remove(); // Remove typing bubble
-    addMessage(text, "bot"); // Real message, with sound
+    typingBubble.remove();
+    addMessage(text, "bot");
   }, delay);
 }
 
-// User submits message
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   const userText = input.value.trim();
@@ -151,7 +135,6 @@ form.addEventListener("submit", (e) => {
   addMessage(userText, "user");
   input.value = "";
 
-  // If session already ended, reject any more name entries
   if (sessionEnded || !didClickRSVP()) {
     botReplyWithTyping(
       "Hi! To RSVP, please click the RSVP button on our website first so we can properly record your names. 😊"
@@ -162,16 +145,14 @@ form.addEventListener("submit", (e) => {
   setTimeout(() => {
     respond(userText);
     resetIdleTimer();
-    idleStage = 0; // User is active again
+    idleStage = 0;
   }, 600);
 });
 
-// Bot replies
 function respond(userText) {
   const lower = userText.toLowerCase();
 
-  // Handle "no" to end session
-  if (lower === "no" || lower === "nope" || lower === "none") {
+  if (["no", "nope", "none"].includes(lower)) {
     if (idleStage === 1 && guestNames.length === 0) {
       botReplyWithTyping("No problem! Let us know if you change your mind. 😊");
       sessionEnded = true;
@@ -186,14 +167,13 @@ function respond(userText) {
       const finalList = guestNames.map((name) => `• ${name}`).join("<br>");
       const message = `🎉 Thank you! Here's the list of names we’ve recorded:<br><br>${finalList}<br><br>We look forward to seeing you! 💖`;
       botReplyWithTyping(message);
-      sessionEnded = true; // end session here
+      sessionEnded = true;
       idleStage = 0;
       clearTimeout(idleTimer);
     }
     return;
   }
 
-  // Check if the input is a valid name
   if (!isValidName(userText)) {
     botReplyWithTyping(
       "Hmm... that doesn’t look like a valid name. Could you double-check and try again? 😊"
@@ -201,27 +181,20 @@ function respond(userText) {
     return;
   }
 
-  // Check for duplicates (case-insensitive)
-  const nameExists = guestNames.some(
-    (name) => name.toLowerCase() === userText.toLowerCase()
-  );
-
-  if (nameExists) {
+  if (
+    guestNames.some((name) => name.toLowerCase() === userText.toLowerCase())
+  ) {
     botReplyWithTyping(
       "🚫 That name is already on the list! Please add someone else."
     );
     return;
   }
 
-  // Step 1: Check if name already exists on Google Sheet
-  fetch(
-    "https://script.google.com/macros/s/AKfycbxs9dO56Yiwg6tSzQhHeuIfyKpAGm0vfmVMV8SvsPA_nBL34bGZ3S-zBp4R4Vicrr4heQ/exec",
-    {
-      method: "POST",
-      body: JSON.stringify({ action: "check", name: userText }),
-      headers: { "Content-Type": "application/json" },
-    }
-  )
+  // ✅ Step 1: Check Google Sheet for duplicates using GET
+  const checkUrl = `${GOOGLE_SCRIPT_URL}?action=check&name=${encodeURIComponent(
+    userText
+  )}`;
+  fetch(checkUrl)
     .then((res) => res.json())
     .then((data) => {
       if (data.exists) {
@@ -229,20 +202,17 @@ function respond(userText) {
         return;
       }
 
-      // Step 2: Add valid name to guestNames
+      // ✅ Step 2: Save to local guest list
       guestNames.push(userText);
 
-      // Step 3: Save to Google Sheets
-      fetch(
-        "https://script.google.com/macros/s/AKfycbxs9dO56Yiwg6tSzQhHeuIfyKpAGm0vfmVMV8SvsPA_nBL34bGZ3S-zBp4R4Vicrr4heQ/exec",
-        {
-          method: "POST",
-          body: JSON.stringify({ action: "save", name: userText }),
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      // ✅ Step 3: Save to Google Sheet
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "save", name: userText }),
+        headers: { "Content-Type": "application/json" },
+      });
 
-      // Step 4: Send bot reply
+      // ✅ Step 4: Reply with success message
       const acknowledgments = [
         "✅ Got it!",
         "👍 Name saved.",
@@ -250,7 +220,6 @@ function respond(userText) {
         "👌 Thanks!",
         "📝 Noted!",
       ];
-
       const prompts = [
         "Would you like to add another name?",
         "Want to add someone else?",
@@ -258,7 +227,6 @@ function respond(userText) {
         "Shall we add another guest?",
         "Feel free to share more names!",
       ];
-
       const instructions = [
         `If you're done, just reply "No".`,
         `When you're finished, type "No".`,
@@ -280,14 +248,12 @@ function respond(userText) {
     });
 }
 
-// Check if RSVP was clicked (URL has ?rsvp=true)
 function didClickRSVP() {
   const urlParams = new URLSearchParams(window.location.search);
   const value = urlParams.get("rsvp");
   return value === "1" || value === "true";
 }
 
-// Start chat on page load
 window.onload = () => {
   if (didClickRSVP()) {
     botReplyWithTyping(
@@ -295,10 +261,9 @@ window.onload = () => {
       1500
     );
 
-    // Start idle timer after greeting
     setTimeout(() => {
       resetIdleTimer();
-    }, 1600); // Slightly longer than typing delay
+    }, 1600);
   } else {
     botReplyWithTyping(
       `Hi! To RSVP, please click the RSVP button on our website first so we can properly record your names. 😊`,
