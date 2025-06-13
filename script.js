@@ -20,6 +20,15 @@ function getRandomItem(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+// Fix mobile 100vh issue
+function setVhUnit() {
+  let vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty("--vh", `${vh}px`);
+}
+window.addEventListener("resize", setVhUnit);
+window.addEventListener("orientationchange", setVhUnit);
+window.addEventListener("load", setVhUnit);
+
 function scrollToBottom() {}
 
 // Capitalize names properly
