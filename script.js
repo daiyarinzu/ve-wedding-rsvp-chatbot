@@ -270,3 +270,11 @@ window.onload = () => {
     );
   }
 };
+
+window.addEventListener(
+  "click",
+  () => {
+    popSound.play().catch(() => {});
+  },
+  { once: true }
+);
