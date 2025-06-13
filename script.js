@@ -43,7 +43,12 @@ function resetIdleTimer() {
 
 function isValidName(name) {
   const trimmed = name.trim();
-  const allowList = ["kerthyllaine", "zaynab faith kerthyllaine"];
+  const allowList = [
+    "kerthyllaine",
+    "zaynab faith kerthyllaine pajo",
+    "Johann Schneider",
+    "Schneider",
+  ];
   if (allowList.includes(trimmed.toLowerCase())) return true;
   if (trimmed.length < 2 || trimmed.length > 30) return false;
   if (!/[a-zA-Z]/.test(trimmed)) return false;
