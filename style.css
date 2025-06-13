@@ -68,9 +68,10 @@ body {
   justify-content: flex-start;
 }
 .user-wrapper {
-  flex-direction: row-reverse;
+  display: flex;
   justify-content: flex-end;
-  width: 100%;
+  align-items: flex-end;
+  gap: 8px;
 }
 
 /* 👤 Avatar */
