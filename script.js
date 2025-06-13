@@ -7,9 +7,10 @@ let sessionEnded = false;
 let idleTimer = null;
 let idleStage = 0;
 
-// ✅ Your Google Apps Script URL here
-const GOOGLE_SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbw-ArbXtdtcw67wBkhVC_-npFVzhKgT3SU6ZSmnjLDn_zw-LdgqPGvgrjqtRs-EInY2Qg/exec";
+// ✅ JSONBin settings
+const JSONBIN_API_URL = "https://api.jsonbin.io/v3/b/684bb8618960c979a5a9077e";
+const JSONBIN_API_KEY =
+  "$2a$10$M.xkZjGz0DiD595oDUW9SeM8MrkagJMaBA4oxqjAHxc8jesa/x/Zu";
 
 function getRandomItem(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
@@ -44,7 +45,6 @@ function isValidName(name) {
   const trimmed = name.trim();
   const allowList = ["kerthyllaine", "zaynab faith kerthyllaine"];
   if (allowList.includes(trimmed.toLowerCase())) return true;
-
   if (trimmed.length < 2 || trimmed.length > 30) return false;
   if (!/[a-zA-Z]/.test(trimmed)) return false;
 
@@ -69,8 +69,8 @@ function addMessage(text, sender = "bot", isTyping = false) {
   const time = formatTime(new Date());
 
   const messageWrapper = document.createElement("div");
-  messageWrapper.classList.add("message-wrapper");
   messageWrapper.classList.add(
+    "message-wrapper",
     sender === "user" ? "user-wrapper" : "bot-wrapper"
   );
 
@@ -127,6 +127,40 @@ function botReplyWithTyping(text, delay = 1000) {
   }, delay);
 }
 
+// ✅ JSONBin: fetch existing names
+async function fetchExistingNames() {
+  try {
+    const response = await fetch(`${JSONBIN_API_URL}/latest`, {
+      headers: {
+        "X-Master-Key": JSONBIN_API_KEY,
+      },
+    });
+    const data = await response.json();
+    return data.record.names || [];
+  } catch (err) {
+    console.error("❌ Error fetching names:", err);
+    return [];
+  }
+}
+
+// ✅ JSONBin: save names
+async function saveNamesToBin(names) {
+  try {
+    const response = await fetch(JSONBIN_API_URL, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Master-Key": JSONBIN_API_KEY,
+      },
+      body: JSON.stringify({ names }),
+    });
+    return await response.json();
+  } catch (err) {
+    console.error("❌ Error saving names:", err);
+    return null;
+  }
+}
+
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   const userText = input.value.trim();
@@ -149,7 +183,7 @@ form.addEventListener("submit", (e) => {
   }, 600);
 });
 
-function respond(userText) {
+async function respond(userText) {
   const lower = userText.toLowerCase();
 
   if (["no", "nope", "none"].includes(lower)) {
@@ -181,70 +215,50 @@ function respond(userText) {
     return;
   }
 
-  if (
-    guestNames.some((name) => name.toLowerCase() === userText.toLowerCase())
-  ) {
-    botReplyWithTyping(
-      "🚫 That name is already on the list! Please add someone else."
-    );
+  const existingNames = await fetchExistingNames();
+  const lowerNames = existingNames.map((n) => n.toLowerCase().trim());
+
+  if (lowerNames.includes(userText.toLowerCase().trim())) {
+    botReplyWithTyping("🚫 That guest has already RSVP’d. Thank you!");
     return;
   }
 
-  // ✅ POST to check
-  fetch(GOOGLE_SCRIPT_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "check", name: userText }),
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      if (data.exists) {
-        botReplyWithTyping("🚫 That guest has already RSVP’d. Thank you!");
-        return;
-      }
+  guestNames.push(userText.trim());
 
-      guestNames.push(userText);
+  const result = await saveNamesToBin([...existingNames, userText.trim()]);
+  if (!result) {
+    botReplyWithTyping("⚠️ Something went wrong. Please try again later.");
+    return;
+  }
 
-      // ✅ POST to save
-      fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "save", name: userText }),
-      });
+  const acknowledgments = [
+    "✅ Got it!",
+    "👍 Name saved.",
+    "📌 Added.",
+    "👌 Thanks!",
+    "📝 Noted!",
+  ];
+  const prompts = [
+    "Would you like to add another name?",
+    "Want to add someone else?",
+    "Anyone else you'd like to include?",
+    "Shall we add another guest?",
+    "Feel free to share more names!",
+  ];
+  const instructions = [
+    `If you're done, just reply "No".`,
+    `When you're finished, type "No".`,
+    `If no more guests, simply reply "No".`,
+    `Reply "No" when you're done adding names.`,
+    `Done? Just type "No".`,
+  ];
 
-      const acknowledgments = [
-        "✅ Got it!",
-        "👍 Name saved.",
-        "📌 Added.",
-        "👌 Thanks!",
-        "📝 Noted!",
-      ];
-      const prompts = [
-        "Would you like to add another name?",
-        "Want to add someone else?",
-        "Anyone else you'd like to include?",
-        "Shall we add another guest?",
-        "Feel free to share more names!",
-      ];
-      const instructions = [
-        `If you're done, just reply "No".`,
-        `When you're finished, type "No".`,
-        `If no more guests, simply reply "No".`,
-        `Reply "No" when you're done adding names.`,
-        `Done? Just type "No".`,
-      ];
+  const finalReply =
+    `${getRandomItem(acknowledgments)}<br>` +
+    `${getRandomItem(prompts)}<br>` +
+    `${getRandomItem(instructions)}`;
 
-      const finalReply =
-        `${getRandomItem(acknowledgments)}<br>` +
-        `${getRandomItem(prompts)}<br>` +
-        `${getRandomItem(instructions)}`;
-
-      botReplyWithTyping(finalReply);
-    })
-    .catch((err) => {
-      console.error("❌ FETCH ERROR:", err);
-      botReplyWithTyping("⚠️ Something went wrong. Please try again later.");
-    });
+  botReplyWithTyping(finalReply);
 }
 
 function didClickRSVP() {
@@ -259,7 +273,6 @@ window.onload = () => {
       `💌 Greetings!\n\nYou are invited to the wedding of Voughn and Emelyn.\n\nPlease let us know if you can come.\nJust reply with your names so we can save your seats and prepare your table.\n\nThank you, and we’re excited to celebrate this special day with you! 💕`,
       1500
     );
-
     setTimeout(() => {
       resetIdleTimer();
     }, 1600);
