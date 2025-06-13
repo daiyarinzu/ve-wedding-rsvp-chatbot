@@ -46,7 +46,7 @@ function isValidName(name) {
   const allowList = [
     "kerthyllaine",
     "zaynab faith kerthyllaine pajo",
-    "Johann Schneider",
+    "Johann Schneider Lalaan",
     "Schneider",
   ];
   if (allowList.includes(trimmed.toLowerCase())) return true;
@@ -277,7 +277,7 @@ function didClickRSVP() {
 window.onload = () => {
   if (didClickRSVP()) {
     botReplyWithTyping(
-      `💌 Greetings!\n\nYou are invited to the wedding of Voughn and Emelyn.\n\nPlease let us know if you can come.\nJust reply with your names so we can save your seats and prepare your table.\n\nThank you, and we’re excited to celebrate this special day with you! 💕`,
+      `💌 Greetings!\n\nYou are invited to the wedding of Voughn and Emelyn.\n\nPlease let us know if you can come.\nJust reply with your FULL names so we can save your seats and prepare your table.\n\nThank you, and we’re excited to celebrate this special day with you! 💕`,
       1500
     );
     setTimeout(() => {

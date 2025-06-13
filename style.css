@@ -1,132 +1,110 @@
+/* 🍃 General Reset & Fonts */
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f2f2f2;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #f3ecdc;
 }
 
+.background-wrapper {
+  background: linear-gradient(to bottom right, #e8d7ba, #fff);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+/* 🪟 Chat Container */
 .chat-container {
-  max-width: 500px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 480px;
+  height: 90vh;
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  background: white;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: #fffef7;
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  overflow: hidden;
 }
 
+/* 💬 Chat Box */
 .chat-box {
   flex: 1;
-  padding: 15px;
+  padding: 16px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
 }
 
-/* Generic message container */
-.message {
-  display: flex;
-  flex-direction: column;
-  margin: 10px 0;
-  position: relative;
-}
-
-/* User and bot bubbles (only text bubbles!) */
+/* 📩 User Messages */
 .message.user {
-  background: #dcf8c6;
+  background: #b1e1c6;
+  color: #003a2c;
   border-radius: 20px 20px 0 20px;
   padding: 10px 14px;
   align-self: flex-end;
-  max-width: 90%;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+  max-width: 85%;
   white-space: pre-wrap;
 }
 
+/* 🤖 Bot Messages */
 .message.bot {
-  background: #f1f0f0;
+  background: #e3d0f3;
+  color: #2f0b3a;
   border-radius: 20px 20px 20px 0;
   padding: 10px 14px;
   align-self: flex-start;
-  max-width: 90%;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+  max-width: 85%;
   white-space: pre-wrap;
 }
 
-/* Message wrappers */
+/* 💬 Shared Wrapper Styles */
 .message-wrapper {
   display: flex;
   align-items: flex-end;
   gap: 8px;
 }
-
 .bot-wrapper {
   justify-content: flex-start;
 }
-
 .user-wrapper {
-  display: flex;
-  justify-content: flex-end;
   flex-direction: row-reverse;
-  align-items: flex-end;
+  justify-content: flex-end;
   width: 100%;
 }
 
-/* Message bubbles */
-.bot {
-  background: #f1f0f0;
-  border-radius: 20px 20px 20px 0;
-  padding: 10px 14px;
-}
-
-.user {
-  background: #dcf8c6;
-  border-radius: 20px 20px 0 20px;
-  padding: 10px 14px;
-}
-
-/* Avatar */
+/* 👤 Avatar */
 .avatar {
   width: 32px;
   height: 32px;
   border-radius: 50%;
 }
 
-/* Typing bubble same size as regular bot bubble */
+/* ⏳ Typing Animation */
 .typing {
-  background: #f1f0f0;
+  background: #e3d0f3;
   border-radius: 20px 20px 20px 0;
   padding: 10px 14px;
   display: inline-flex;
   align-items: center;
-  max-width: fit-content;
-  height: auto;
 }
-
-/* Typing dots (small and centered) */
 .typing-dots {
   display: flex;
-  align-items: center;
-  justify-content: center;
   gap: 4px;
 }
-
 .typing-dots span {
   width: 6px;
   height: 6px;
-  background-color: #999;
+  background-color: #8c52ff;
   border-radius: 50%;
-  display: inline-block;
   animation: typingBounce 1.4s infinite ease-in-out;
 }
-
 .typing-dots span:nth-child(2) {
-  animation-delay: 0.4s;
+  animation-delay: 0.3s;
 }
 .typing-dots span:nth-child(3) {
   animation-delay: 0.6s;
 }
-
 @keyframes typingBounce {
   0%,
   80%,
@@ -140,47 +118,46 @@ body {
   }
 }
 
-/* Timestamp */
+/* 🕒 Timestamp */
 .timestamp {
   font-size: 11px;
-  color: #888;
+  color: #999;
   margin-top: 3px;
   text-align: right;
   align-self: flex-end;
 }
 
-/* Input and send */
+/* 🧾 Form & Input */
 form {
   display: flex;
-  padding: 10px;
-  background: #eee;
+  padding: 12px;
+  background: #f4f1eb;
+  border-top: 1px solid #ddd;
 }
-
 input[type="text"] {
   flex: 1;
-  padding: 10px;
+  padding: 10px 16px;
   font-size: 16px;
-  border-radius: 20px;
+  border-radius: 25px;
   border: 1px solid #ccc;
   outline: none;
 }
 
+/* ✈️ Send Icon Button */
 button {
   margin-left: 10px;
-  padding: 10px 20px;
+  padding: 10px 14px;
   border: none;
   background: #4caf50;
+  border-radius: 50%;
   color: white;
-  font-weight: bold;
-  border-radius: 20px;
+  font-size: 18px;
   cursor: pointer;
+  transition: background 0.3s;
 }
-
-/* Align user message wrapper to the right */
-.user-message {
-  align-items: flex-end;
-  text-align: right;
-  display: flex;
-  flex-direction: column;
-  align-self: flex-end;
+button:hover {
+  background: #45a047;
+}
+button i {
+  pointer-events: none;
 }
