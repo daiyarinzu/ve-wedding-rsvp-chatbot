@@ -20,6 +20,12 @@ function getRandomItem(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+function scrollToBottom() {
+  setTimeout(() => {
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }, 100);
+}
+
 // Capitalize names properly
 function capitalizeName(name) {
   return name
@@ -141,7 +147,7 @@ function addMessage(text, sender = "bot", isTyping = false) {
 
   // Display it
   chatBox.appendChild(wrapper);
-  chatBox.scrollTop = chatBox.scrollHeight;
+  scrollToBottom();
 
   // Play pop sound if bot (and not typing)
   if (!isTyping && sender === "bot") {
@@ -164,6 +170,7 @@ function botReplyWithTyping(text, delay = 1000) {
   setTimeout(() => {
     typingBubble.remove();
     addMessage(text, "bot");
+    scrollToBottom();
   }, delay);
 }
 
@@ -320,25 +327,30 @@ function didClickRSVP() {
 window.onload = () => {
   if (didClickRSVP()) {
     botReplyWithTyping(
-      `💌 Greetings!\n\nYou are invited to the wedding of Voughn and Emelyn.\n\nPlease let us know if you can come.\nJust reply with your FULL name so we can save your seats and prepare your table.\n\nThank you, and we’re excited to celebrate this special day with you! 💕`,
+      `💌 Greetings!\n\nYou are invited to the wedding of Voughn and Emelyn.\n\nPlease let us know if you can come. Just reply with your FULL name so we can save your seats and prepare your table.\n\nThank you, and we’re excited to celebrate this special day with you! 💕`,
       1500
     );
+
     setTimeout(() => {
       resetIdleTimer();
-    }, 1600);
+    }, 2000);
   } else {
     botReplyWithTyping(
       `Hi! To RSVP, please click the RSVP button on our website first so we can properly record your names. 😊`,
       1000
     );
   }
+
+  // ✨ Add a longer timeout to scroll after messages render
+  setTimeout(() => {
+    scrollToBottom();
+  }, 2500); // Give time for bot message animation
 };
 
-// First click anywhere enables sound (due to browser autoplay policies)
-window.addEventListener(
-  "click",
-  () => {
-    popSound.play().catch(() => {});
-  },
-  { once: true }
-);
+window.addEventListener("resize", () => {
+  scrollToBottom();
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  scrollToBottom();
+});
