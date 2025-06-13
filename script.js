@@ -219,7 +219,9 @@ async function respond(userText) {
   const lowerNames = existingNames.map((n) => n.toLowerCase().trim());
 
   if (lowerNames.includes(userText.toLowerCase().trim())) {
-    botReplyWithTyping("🚫 That guest has already RSVP’d. Thank you!");
+    botReplyWithTyping(
+      "🚫 That guest has already RSVP’d. Please enter other names. Thank you! 😊"
+    );
     return;
   }
 
