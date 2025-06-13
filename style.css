@@ -1,12 +1,18 @@
-/* 🍃 General Reset & Fonts */
+/* General Reset & Fonts */
+/* Removes default body margin and sets a clean, readable font and beige background */
 body {
   margin: 0;
-  font-family: "Segoe UI", Arial, sans-serif;
-  background: #f3ecdc;
+  font-family: "Poppins", Arial, sans-serif;
+  background: #f3ecdc; /* Soft beige */
 }
 
+/* Background wrapper for centering the chatbot and future image backgrounds */
 .background-wrapper {
-  background: linear-gradient(to bottom right, #e8d7ba, #fff);
+  background: linear-gradient(
+    to bottom right,
+    #e8d7ba,
+    #fff
+  ); /* Light beige gradient */
   min-height: 100vh;
   display: flex;
   justify-content: center;
@@ -14,20 +20,22 @@ body {
   padding: 20px;
 }
 
-/* 🪟 Chat Container */
+/* Chat Container */
+/* The main chatbot card – centered, styled with a soft box shadow and rounded corners */
 .chat-container {
   width: 100%;
   max-width: 480px;
   height: 90vh;
   display: flex;
   flex-direction: column;
-  background-color: #fffef7;
+  background-color: #fffef7; /* Light cream background */
   box-shadow: 0 6px 30px rgba(0, 0, 0, 0.1);
   border-radius: 16px;
   overflow: hidden;
 }
 
-/* 💬 Chat Box */
+/* Chat Box */
+/* The scrollable area that holds the conversation messages */
 .chat-box {
   flex: 1;
   padding: 16px;
@@ -36,10 +44,11 @@ body {
   flex-direction: column;
 }
 
-/* 📩 User Messages */
+/* User Messages */
+/* Style for messages sent by the user – right aligned with green background */
 .message.user {
-  background: #b1e1c6;
-  color: #003a2c;
+  background: #b1e1c6; /* Mint green */
+  color: #003a2c; /* Dark green text */
   border-radius: 20px 20px 0 20px;
   padding: 10px 14px;
   align-self: flex-end;
@@ -47,10 +56,11 @@ body {
   white-space: pre-wrap;
 }
 
-/* 🤖 Bot Messages */
+/* Bot Messages */
+/* Style for bot messages – left aligned with purple background */
 .message.bot {
-  background: #e3d0f3;
-  color: #2f0b3a;
+  background: #e3d0f3; /* Soft purple */
+  color: #2f0b3a; /* Dark purple text */
   border-radius: 20px 20px 20px 0;
   padding: 10px 14px;
   align-self: flex-start;
@@ -58,32 +68,35 @@ body {
   white-space: pre-wrap;
 }
 
-/* 💬 Shared Wrapper Styles */
+/* Shared Wrapper Styles */
+/* Layout for wrapping messages with avatars or grouping */
 .message-wrapper {
   display: flex;
   align-items: flex-end;
   gap: 8px;
 }
 .bot-wrapper {
-  justify-content: flex-start;
+  justify-content: flex-start; /* Bot messages on the left */
 }
 .user-wrapper {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-end; /* User messages on the right */
   align-items: flex-end;
   gap: 8px;
 }
 
-/* 👤 Avatar */
+/* Avatar */
+/* Optional avatar image style */
 .avatar {
   width: 32px;
   height: 32px;
   border-radius: 50%;
 }
 
-/* ⏳ Typing Animation */
+/* Typing Animation */
+/* Simulates "typing..." animation using 3 bouncing dots */
 .typing {
-  background: #e3d0f3;
+  background: #e3d0f3; /* Same as bot message bubble */
   border-radius: 20px 20px 20px 0;
   padding: 10px 14px;
   display: inline-flex;
@@ -96,7 +109,7 @@ body {
 .typing-dots span {
   width: 6px;
   height: 6px;
-  background-color: #8c52ff;
+  background-color: #8c52ff; /* Deep purple dots */
   border-radius: 50%;
   animation: typingBounce 1.4s infinite ease-in-out;
 }
@@ -119,7 +132,8 @@ body {
   }
 }
 
-/* 🕒 Timestamp */
+/* Timestamp */
+/* Shows small timestamp below each message (if used in script.js) */
 .timestamp {
   font-size: 11px;
   color: #999;
@@ -128,11 +142,12 @@ body {
   align-self: flex-end;
 }
 
-/* 🧾 Form & Input */
+/* Form & Input */
+/* Styles for the message input area at the bottom */
 form {
   display: flex;
   padding: 12px;
-  background: #f4f1eb;
+  background: #f4f1eb; /* Soft beige */
   border-top: 1px solid #ddd;
 }
 input[type="text"] {
@@ -144,21 +159,32 @@ input[type="text"] {
   outline: none;
 }
 
-/* ✈️ Send Icon Button */
-button {
-  margin-left: 10px;
-  padding: 10px 14px;
+/* Send Icon Button */
+/* The paper plane send button with diagonal orientation and hover animation */
+button#send-button {
+  background: none;
   border: none;
-  background: #4caf50;
-  border-radius: 50%;
-  color: white;
-  font-size: 18px;
+  padding: 0 12px;
   cursor: pointer;
-  transition: background 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4a2c44; /* Deep purple */
+  transition: transform 0.2s ease;
 }
-button:hover {
-  background: #45a047;
+
+/* Rotated paper plane icon */
+button#send-button svg {
+  transform: rotate(-45deg); /* Diagonal angle */
+  transition: transform 0.2s ease;
+  width: 28px;
+  height: 28px;
 }
-button i {
-  pointer-events: none;
+
+/* On hover, animate the send icon and make it slightly bigger */
+button#send-button:hover svg {
+  transform: rotate(-45deg) scale(1.2);
+}
+button#send-button:hover {
+  transform: scale(1.2);
 }

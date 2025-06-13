@@ -1,21 +1,26 @@
+// DOM Elements
 const form = document.getElementById("chat-form");
 const input = document.getElementById("user-input");
 const chatBox = document.getElementById("chat-box");
 const popSound = new Audio("pop.mp3");
+
+// Guest names and session state
 const guestNames = [];
 let sessionEnded = false;
 let idleTimer = null;
 let idleStage = 0;
 
-// ✅ JSONBin settings
+// JSONBin API (used to store and fetch names)
 const JSONBIN_API_URL = "https://api.jsonbin.io/v3/b/684bb8618960c979a5a9077e";
 const JSONBIN_API_KEY =
   "$2a$10$M.xkZjGz0DiD595oDUW9SeM8MrkagJMaBA4oxqjAHxc8jesa/x/Zu";
 
+// Helper to pick a random item (used for random replies)
 function getRandomItem(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+// Reset idle timer and send follow-up if user is inactive
 function resetIdleTimer() {
   if (sessionEnded) return;
   clearTimeout(idleTimer);
@@ -27,7 +32,7 @@ function resetIdleTimer() {
           `👋 Just checking in — are you still there? You can keep adding names or reply "No" to finish.`
         );
         idleStage = 1;
-        resetIdleTimer();
+        resetIdleTimer(); // Start next stage timer
       } else if (idleStage === 1) {
         botReplyWithTyping(
           `⏱️ Looks like you're away. We'll end this RSVP session for now. You can start again anytime. 😊`
@@ -38,24 +43,29 @@ function resetIdleTimer() {
       }
     },
     idleStage === 0 ? 2 * 60 * 1000 : 3 * 60 * 1000
-  );
+  ); // 2min > 3min
 }
 
+// Validate name format and quality
 function isValidName(name) {
   const trimmed = name.trim();
+
+  // Whitelist override
   const allowList = [
     "kerthyllaine",
     "zaynab faith kerthyllaine pajo",
-    "Johann Schneider Lalaan",
-    "Schneider",
+    "johann schneider lalaan",
+    "schneider",
   ];
   if (allowList.includes(trimmed.toLowerCase())) return true;
+
+  // Basic checks
   if (trimmed.length < 2 || trimmed.length > 30) return false;
   if (!/[a-zA-Z]/.test(trimmed)) return false;
 
+  // Advanced gibberish detection
   const vowels = (trimmed.match(/[aeiou]/gi) || []).length;
   const consonants = (trimmed.match(/[bcdfghjklmnpqrstvwxyz]/gi) || []).length;
-
   if (vowels === 0 || consonants === 0) return false;
   if (/(?:[aeiou]{4,}|[bcdfghjklmnpqrstvwxyz]{4,})/i.test(trimmed))
     return false;
@@ -64,11 +74,13 @@ function isValidName(name) {
   return true;
 }
 
+// Format current time as HH:MM
 function formatTime(date) {
   const options = { hour: "2-digit", minute: "2-digit" };
   return date.toLocaleTimeString([], options);
 }
 
+// Add a message to the chat (user or bot)
 function addMessage(text, sender = "bot", isTyping = false) {
   const wrapper = document.createElement("div");
   const time = formatTime(new Date());
@@ -83,12 +95,14 @@ function addMessage(text, sender = "bot", isTyping = false) {
   messageBubble.classList.add("message", sender);
 
   if (isTyping) {
+    // Show typing dots for bot
     messageBubble.classList.add("typing");
     messageBubble.innerHTML = `<div class="typing-dots"><span></span><span></span><span></span></div>`;
   } else {
     messageBubble.innerHTML = text.replace(/\n/g, "<br>");
   }
 
+  // Add avatar if it's from the bot
   if (sender === "bot") {
     const avatar = document.createElement("img");
     avatar.src = "avatar.png";
@@ -104,6 +118,7 @@ function addMessage(text, sender = "bot", isTyping = false) {
   if (sender === "user") wrapper.classList.add("user-message");
   wrapper.appendChild(messageWrapper);
 
+  // Add timestamp (not for typing bubble)
   if (!isTyping) {
     const timestamp = document.createElement("div");
     timestamp.className = "timestamp";
@@ -111,9 +126,11 @@ function addMessage(text, sender = "bot", isTyping = false) {
     wrapper.appendChild(timestamp);
   }
 
+  // Display it
   chatBox.appendChild(wrapper);
   chatBox.scrollTop = chatBox.scrollHeight;
 
+  // Play pop sound if bot (and not typing)
   if (!isTyping && sender === "bot") {
     try {
       popSound.currentTime = 0;
@@ -124,6 +141,7 @@ function addMessage(text, sender = "bot", isTyping = false) {
   return wrapper;
 }
 
+// Bot replies with typing delay
 function botReplyWithTyping(text, delay = 1000) {
   const typingBubble = addMessage("", "bot", true);
   setTimeout(() => {
@@ -132,13 +150,11 @@ function botReplyWithTyping(text, delay = 1000) {
   }, delay);
 }
 
-// ✅ JSONBin: fetch existing names
+// Fetch RSVP list from JSONBin
 async function fetchExistingNames() {
   try {
     const response = await fetch(`${JSONBIN_API_URL}/latest`, {
-      headers: {
-        "X-Master-Key": JSONBIN_API_KEY,
-      },
+      headers: { "X-Master-Key": JSONBIN_API_KEY },
     });
     const data = await response.json();
     return data.record.names || [];
@@ -148,7 +164,7 @@ async function fetchExistingNames() {
   }
 }
 
-// ✅ JSONBin: save names
+// Save new names to JSONBin
 async function saveNamesToBin(names) {
   try {
     const response = await fetch(JSONBIN_API_URL, {
@@ -166,6 +182,7 @@ async function saveNamesToBin(names) {
   }
 }
 
+// Handle form submission
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   const userText = input.value.trim();
@@ -188,9 +205,11 @@ form.addEventListener("submit", (e) => {
   }, 600);
 });
 
+// Handle bot response logic
 async function respond(userText) {
   const lower = userText.toLowerCase();
 
+  // End session if user says "no"
   if (["no", "nope", "none"].includes(lower)) {
     if (idleStage === 1 && guestNames.length === 0) {
       botReplyWithTyping("No problem! Let us know if you change your mind. 😊");
@@ -213,6 +232,7 @@ async function respond(userText) {
     return;
   }
 
+  // Invalid name
   if (!isValidName(userText)) {
     botReplyWithTyping(
       "Hmm... that doesn’t look like a valid name. Could you double-check and try again? 😊"
@@ -223,6 +243,7 @@ async function respond(userText) {
   const existingNames = await fetchExistingNames();
   const lowerNames = existingNames.map((n) => n.toLowerCase().trim());
 
+  // Duplicate name
   if (lowerNames.includes(userText.toLowerCase().trim())) {
     botReplyWithTyping(
       "🚫 That guest has already RSVP’d. Please enter other names. Thank you! 😊"
@@ -230,14 +251,15 @@ async function respond(userText) {
     return;
   }
 
+  // Save name
   guestNames.push(userText.trim());
-
   const result = await saveNamesToBin([...existingNames, userText.trim()]);
   if (!result) {
     botReplyWithTyping("⚠️ Something went wrong. Please try again later.");
     return;
   }
 
+  // Random reply components
   const acknowledgments = [
     "✅ Got it!",
     "👍 Name saved.",
@@ -260,20 +282,20 @@ async function respond(userText) {
     `Done? Just type "No".`,
   ];
 
-  const finalReply =
-    `${getRandomItem(acknowledgments)}<br>` +
-    `${getRandomItem(prompts)}<br>` +
-    `${getRandomItem(instructions)}`;
-
+  const finalReply = `${getRandomItem(acknowledgments)}<br>${getRandomItem(
+    prompts
+  )}<br>${getRandomItem(instructions)}`;
   botReplyWithTyping(finalReply);
 }
 
+// Detect if user came from RSVP button on your website
 function didClickRSVP() {
   const urlParams = new URLSearchParams(window.location.search);
   const value = urlParams.get("rsvp");
   return value === "1" || value === "true";
 }
 
+// On page load, greet user or block if not from RSVP link
 window.onload = () => {
   if (didClickRSVP()) {
     botReplyWithTyping(
@@ -291,6 +313,7 @@ window.onload = () => {
   }
 };
 
+// First click anywhere enables sound (due to browser autoplay policies)
 window.addEventListener(
   "click",
   () => {

@@ -4,21 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RSVP Chatbot</title>
+
+    <!-- Links the custom stylesheet for layout and design -->
     <link rel="stylesheet" href="style.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-      integrity="sha512-ZzHvB+a1..."
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
   </head>
+
   <body>
-    <!-- 🌿 Background wrapper for custom background / images -->
+    <!-- Outer container for placing a background or images behind the chatbot -->
     <div class="background-wrapper">
+      <!-- Main chatbot UI box -->
       <div class="chat-container" id="chat-container">
+        <!-- Where messages from the user and bot will be displayed -->
         <div id="chat-box" class="chat-box"></div>
+
+        <!-- Form that handles user input and submission -->
         <form id="chat-form">
+          <!-- Text input field for the guest to type names -->
           <input
             type="text"
             id="user-input"
@@ -26,13 +27,25 @@
             autocomplete="off"
             required
           />
-          <button type="submit">
-            <i class="fas fa-paper-plane"></i>
+
+          <!-- Send button, customized with a paper airplane SVG icon -->
+          <button type="submit" id="send-button">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="32"
+              height="32"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <!-- SVG path that draws the paper airplane shape -->
+              <path d="M2 21l21-9L2 3v7l15 2-15 2v7z" />
+            </svg>
           </button>
         </form>
       </div>
     </div>
 
+    <!-- Main JavaScript logic for chatbot interaction -->
     <script src="script.js"></script>
   </body>
 </html>
