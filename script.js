@@ -11,7 +11,7 @@ let idleTimer = null;
 let idleStage = 0;
 
 // JSONBin API (used to store and fetch names)
-const JSONBIN_API_URL = "https://api.jsonbin.io/v3/b/684bb8618960c979a5a9077e";
+const JSONBIN_API_URL = "https://api.jsonbin.io/v3/b/684c26f58561e97a5023a1a8";
 const JSONBIN_API_KEY =
   "$2a$10$M.xkZjGz0DiD595oDUW9SeM8MrkagJMaBA4oxqjAHxc8jesa/x/Zu";
 
@@ -20,11 +20,7 @@ function getRandomItem(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-function scrollToBottom() {
-  setTimeout(() => {
-    chatBox.scrollTop = chatBox.scrollHeight;
-  }, 100);
-}
+function scrollToBottom() {}
 
 // Capitalize names properly
 function capitalizeName(name) {
@@ -146,7 +142,7 @@ function addMessage(text, sender = "bot", isTyping = false) {
   }
 
   // Display it
-  chatBox.appendChild(wrapper);
+  chatBox.prepend(wrapper);
   scrollToBottom();
 
   // Play pop sound if bot (and not typing)
