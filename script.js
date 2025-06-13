@@ -20,6 +20,16 @@ function getRandomItem(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+// Capitalize names properly
+function capitalizeName(name) {
+  return name
+    .trim()
+    .toLowerCase()
+    .split(/\s+/)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
 // Reset idle timer and send follow-up if user is inactive
 function resetIdleTimer() {
   if (sessionEnded) return;
@@ -49,28 +59,31 @@ function resetIdleTimer() {
 // Validate name format and quality
 function isValidName(name) {
   const trimmed = name.trim();
-
-  // Whitelist override
   const allowList = [
     "kerthyllaine",
     "zaynab faith kerthyllaine pajo",
     "johann schneider lalaan",
     "schneider",
   ];
-  if (allowList.includes(trimmed.toLowerCase())) return true;
+  const lowered = trimmed.toLowerCase();
+  if (allowList.includes(lowered)) return true;
 
-  // Basic checks
-  if (trimmed.length < 2 || trimmed.length > 30) return false;
+  // Length check
+  if (trimmed.length < 2 || trimmed.length > 50) return false;
+
+  // Must contain at least one letter
   if (!/[a-zA-Z]/.test(trimmed)) return false;
 
-  // Advanced gibberish detection
+  // Vowel and consonant check
   const vowels = (trimmed.match(/[aeiou]/gi) || []).length;
   const consonants = (trimmed.match(/[bcdfghjklmnpqrstvwxyz]/gi) || []).length;
   if (vowels === 0 || consonants === 0) return false;
+
+  // Reject long gibberish
   if (/(?:[aeiou]{4,}|[bcdfghjklmnpqrstvwxyz]{4,})/i.test(trimmed))
     return false;
-  if (trimmed === trimmed.toLowerCase() && !trimmed.includes(" ")) return false;
 
+  // Final check: allow lowercase names — we’ll auto-capitalize later
   return true;
 }
 
@@ -137,6 +150,10 @@ function addMessage(text, sender = "bot", isTyping = false) {
       popSound.play();
     } catch (err) {}
   }
+
+  // ✨ Add small animation delay
+  messageWrapper.style.animationDelay = "0s";
+  messageWrapper.style.animationFillMode = "both";
 
   return wrapper;
 }
@@ -209,7 +226,6 @@ form.addEventListener("submit", (e) => {
 async function respond(userText) {
   const lower = userText.toLowerCase();
 
-  // End session if user says "no"
   if (["no", "nope", "none"].includes(lower)) {
     if (idleStage === 1 && guestNames.length === 0) {
       botReplyWithTyping("No problem! Let us know if you change your mind. 😊");
@@ -232,7 +248,6 @@ async function respond(userText) {
     return;
   }
 
-  // Invalid name
   if (!isValidName(userText)) {
     botReplyWithTyping(
       "Hmm... that doesn’t look like a valid name. Could you double-check and try again? 😊"
@@ -240,26 +255,30 @@ async function respond(userText) {
     return;
   }
 
+  // ✅ Format the name with capitalized words
+  const formattedName = userText
+    .trim()
+    .toLowerCase()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+
   const existingNames = await fetchExistingNames();
   const lowerNames = existingNames.map((n) => n.toLowerCase().trim());
 
-  // Duplicate name
-  if (lowerNames.includes(userText.toLowerCase().trim())) {
+  if (lowerNames.includes(formattedName.toLowerCase())) {
     botReplyWithTyping(
       "🚫 That guest has already RSVP’d. Please enter other names. Thank you! 😊"
     );
     return;
   }
 
-  // Save name
-  guestNames.push(userText.trim());
-  const result = await saveNamesToBin([...existingNames, userText.trim()]);
+  guestNames.push(formattedName);
+
+  const result = await saveNamesToBin([...existingNames, formattedName]);
   if (!result) {
     botReplyWithTyping("⚠️ Something went wrong. Please try again later.");
     return;
   }
 
-  // Random reply components
   const acknowledgments = [
     "✅ Got it!",
     "👍 Name saved.",
@@ -282,9 +301,11 @@ async function respond(userText) {
     `Done? Just type "No".`,
   ];
 
-  const finalReply = `${getRandomItem(acknowledgments)}<br>${getRandomItem(
-    prompts
-  )}<br>${getRandomItem(instructions)}`;
+  const finalReply =
+    `${getRandomItem(acknowledgments)}<br>` +
+    `${getRandomItem(prompts)}<br>` +
+    `${getRandomItem(instructions)}`;
+
   botReplyWithTyping(finalReply);
 }
 
@@ -299,7 +320,7 @@ function didClickRSVP() {
 window.onload = () => {
   if (didClickRSVP()) {
     botReplyWithTyping(
-      `💌 Greetings!\n\nYou are invited to the wedding of Voughn and Emelyn.\n\nPlease let us know if you can come.\nJust reply with your FULL names so we can save your seats and prepare your table.\n\nThank you, and we’re excited to celebrate this special day with you! 💕`,
+      `💌 Greetings!\n\nYou are invited to the wedding of Voughn and Emelyn.\n\nPlease let us know if you can come.\nJust reply with your FULL name so we can save your seats and prepare your table.\n\nThank you, and we’re excited to celebrate this special day with you! 💕`,
       1500
     );
     setTimeout(() => {

@@ -75,10 +75,13 @@ body {
   display: flex;
   align-items: flex-end;
   gap: 8px;
+  animation: fadeInUp 0.3s ease-out;
 }
+
 .bot-wrapper {
   justify-content: flex-start; /* Bot messages on the left */
 }
+
 .user-wrapper {
   display: flex;
   justify-content: flex-end; /* User messages on the right */
@@ -188,4 +191,16 @@ button#send-button:hover svg {
 }
 button#send-button:hover {
   transform: scale(1.2);
+}
+
+/* Chat bubble entrance animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
