@@ -10,8 +10,14 @@ let sessionEnded = false;
 let idleTimer = null;
 let idleStage = 0;
 
+let maxSeats = null; // Total allowed seats (from user input)
+let awaitingSeatCount = true; // Are we waiting for the user to send the seat count?
+
+let awaitingConfirmation = false;
+let partialConfirmationShown = false;
+
 // JSONBin API (used to store and fetch names)
-const JSONBIN_API_URL = "https://api.jsonbin.io/v3/b/684c26f58561e97a5023a1a8";
+const JSONBIN_API_URL = "https://api.jsonbin.io/v3/b/684fb7ec8561e97a5025038b";
 const JSONBIN_API_KEY =
   "$2a$10$M.xkZjGz0DiD595oDUW9SeM8MrkagJMaBA4oxqjAHxc8jesa/x/Zu";
 
@@ -227,8 +233,47 @@ form.addEventListener("submit", (e) => {
 
 // Handle bot response logic
 async function respond(userText) {
+  if (awaitingConfirmation) {
+    const lowerConfirm = userText.toLowerCase();
+    if (["yes", "yep", "yeah", "correct"].includes(lowerConfirm)) {
+      const existingNames = await fetchExistingNames();
+      const newNames = [...existingNames];
+
+      for (const name of guestNames) {
+        // Prevent saving duplicates from other users
+        if (
+          !existingNames
+            .map((n) => n.toLowerCase().trim())
+            .includes(name.toLowerCase())
+        ) {
+          newNames.push(name);
+        }
+      }
+
+      const result = await saveNamesToBin(newNames);
+      if (!result) {
+        botReplyWithTyping(
+          "⚠️ Something went wrong while saving your RSVP. Please try again later."
+        );
+        return;
+      }
+
+      botReplyWithTyping(
+        `🎉 Thank you! We've recorded all ${guestNames.length} guest name${
+          guestNames.length > 1 ? "s" : ""
+        }. \n\nWe kindly ask that these seats are joyfully filled on the day of the event, so the heartfelt efforts and careful preparations of the bride and groom can be fully cherished. 😊\n\nLooking forward to seeing you! 💖`
+      );
+
+      sessionEnded = true;
+      awaitingConfirmation = false;
+      clearTimeout(idleTimer);
+      return;
+    }
+  }
+
   const lower = userText.toLowerCase();
 
+  // Step 1: Handle "no"
   if (["no", "nope", "none"].includes(lower)) {
     if (idleStage === 1 && guestNames.length === 0) {
       botReplyWithTyping("No problem! Let us know if you change your mind. 😊");
@@ -240,17 +285,96 @@ async function respond(userText) {
 
     if (guestNames.length === 0) {
       botReplyWithTyping("No problem! Let us know if you change your mind. 😊");
-    } else {
-      const finalList = guestNames.map((name) => `• ${name}`).join("<br>");
-      const message = `🎉 Thank you! Here's the list of names we’ve recorded:<br><br>${finalList}<br><br>We look forward to seeing you! 💖`;
-      botReplyWithTyping(message);
       sessionEnded = true;
       idleStage = 0;
       clearTimeout(idleTimer);
+      partialConfirmationShown = false;
+    } else if (guestNames.length < maxSeats && !partialConfirmationShown) {
+      const remaining = maxSeats - guestNames.length;
+      const finalList = guestNames.map((name) => `• ${name}`).join("<br>");
+      botReplyWithTyping(
+        `🎉 Thank you! Here are the name(s) you've sent us:<br><br>${finalList}<br><br>You still have ${remaining} seat${
+          remaining > 1 ? "s" : ""
+        } left. Please enter ${
+          remaining === 1 ? "1 more name" : remaining + " more names"
+        } or reply "No" to finish.`
+      );
+      partialConfirmationShown = true;
+    } else if (guestNames.length < maxSeats && partialConfirmationShown) {
+      const finalList = guestNames.map((name) => `• ${name}`).join("<br>");
+
+      const existingNames = await fetchExistingNames();
+      const newNames = [...existingNames];
+
+      for (const name of guestNames) {
+        if (
+          !existingNames
+            .map((n) => n.toLowerCase().trim())
+            .includes(name.toLowerCase())
+        ) {
+          newNames.push(name);
+        }
+      }
+
+      const result = await saveNamesToBin(newNames);
+      if (!result) {
+        botReplyWithTyping(
+          "⚠️ Something went wrong while saving your RSVP. Please try again later."
+        );
+        return;
+      }
+
+      botReplyWithTyping(
+        `🎉 Thank you! We've recorded all ${guestNames.length} guest name${
+          guestNames.length > 1 ? "s" : ""
+        }. <br><br>We kindly ask that these seats are joyfully filled on the day of the event, so the heartfelt efforts and careful preparations of the bride and groom can be fully cherished. 😊<br><br>Looking forward to seeing you! 💖`
+      );
+
+      sessionEnded = true;
+      idleStage = 0;
+      clearTimeout(idleTimer);
+      partialConfirmationShown = false;
+      return;
+    } else {
+      // User wants to edit the names
+      guestNames.length = 0; // Clear the names
+      awaitingConfirmation = false;
+      botReplyWithTyping(
+        "No problem! Please re-enter the names one by one. 😊"
+      );
+    }
+
+    return;
+  }
+
+  // Step 2: Awaiting seat count
+  if (awaitingSeatCount) {
+    const seatCount = parseInt(userText);
+    if (isNaN(seatCount) || seatCount < 1 || seatCount > 10) {
+      botReplyWithTyping("⚠️ Please enter a valid number of seats (1–10).");
+    } else {
+      maxSeats = seatCount;
+      awaitingSeatCount = false;
+      botReplyWithTyping(
+        `Great! You may now RSVP up to ${maxSeats} guest${
+          maxSeats > 1 ? "s" : ""
+        }.\n\nPlease reply with the guest(s) full name one by one. 😊`
+      );
     }
     return;
   }
 
+  // Step 3: Already reached max?
+  if (guestNames.length >= maxSeats) {
+    botReplyWithTyping(
+      `✅ You've already added ${maxSeats} guest${
+        maxSeats > 1 ? "s" : ""
+      }. If you need to make changes, please message us directly. 😊`
+    );
+    return;
+  }
+
+  // Step 4: Name validation
   if (!isValidName(userText)) {
     botReplyWithTyping(
       "Hmm... that doesn’t look like a valid name. Could you double-check and try again? 😊"
@@ -258,27 +382,30 @@ async function respond(userText) {
     return;
   }
 
-  // ✅ Format the name with capitalized words
   const formattedName = userText
     .trim()
     .toLowerCase()
     .replace(/\b\w/g, (char) => char.toUpperCase());
 
-  const existingNames = await fetchExistingNames();
-  const lowerNames = existingNames.map((n) => n.toLowerCase().trim());
+  if (!awaitingConfirmation) {
+    const existingNames = await fetchExistingNames();
+    const lowerNames = existingNames.map((n) => n.toLowerCase().trim());
 
-  if (lowerNames.includes(formattedName.toLowerCase())) {
-    botReplyWithTyping(
-      "🚫 That guest has already RSVP’d. Please enter other names. Thank you! 😊"
-    );
-    return;
+    if (lowerNames.includes(formattedName.toLowerCase())) {
+      botReplyWithTyping(
+        "🚫 That guest has already RSVP’d. Please enter other names. Thank you! 😊"
+      );
+      return;
+    }
   }
 
   guestNames.push(formattedName);
 
-  const result = await saveNamesToBin([...existingNames, formattedName]);
-  if (!result) {
-    botReplyWithTyping("⚠️ Something went wrong. Please try again later.");
+  if (guestNames.length === maxSeats) {
+    const finalList = guestNames.map((name) => `• ${name}`).join("<br>");
+    const message = `🎉 Thank you! Here are the name(s) you've sent us:<br><br>${finalList}<br><br>Can you double check if everything is correct? Please reply "Yes" or "No".`;
+    botReplyWithTyping(message);
+    awaitingConfirmation = true;
     return;
   }
 
@@ -323,7 +450,7 @@ function didClickRSVP() {
 window.onload = () => {
   if (didClickRSVP()) {
     botReplyWithTyping(
-      `💌 Greetings!\n\nYou are invited to the wedding of Voughn and Emelyn.\n\nPlease let us know if you can come. Just reply with your FULL name so we can save your seats and prepare your table.\n\nThank you, and we’re excited to celebrate this special day with you! 💕`,
+      `💌 Greetings!\n\nYou are invited to the wedding of Voughn and Emelyn!\n\nBased on the number of seats shown in your invitation, kindly tell us how many guest(s) will be attending. 😊`,
       1500
     );
 
