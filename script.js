@@ -76,22 +76,17 @@ function isValidName(name) {
   const lowered = trimmed.toLowerCase();
   if (allowList.includes(lowered)) return true;
 
-  // Length check
   if (trimmed.length < 2 || trimmed.length > 50) return false;
-
-  // Must contain at least one letter
   if (!/[a-zA-Z]/.test(trimmed)) return false;
 
-  // Vowel and consonant check
   const vowels = (trimmed.match(/[aeiou]/gi) || []).length;
   const consonants = (trimmed.match(/[bcdfghjklmnpqrstvwxyz]/gi) || []).length;
   if (vowels === 0 || consonants === 0) return false;
 
-  // Reject long gibberish
-  if (/(?:[aeiou]{4,}|[bcdfghjklmnpqrstvwxyz]{4,})/i.test(trimmed))
+  // Looser gibberish detection — block only extreme cases
+  if (/(?:[aeiou]{6,}|[bcdfghjklmnpqrstvwxyz]{6,})/i.test(trimmed))
     return false;
 
-  // Final check: allow lowercase names — we’ll auto-capitalize later
   return true;
 }
 
@@ -263,6 +258,7 @@ async function respond(userText) {
           guestNames.length > 1 ? "s" : ""
         }. \n\nWe kindly ask that these seats are joyfully filled on the day of the event, so the heartfelt efforts and careful preparations of the bride and groom can be fully cherished. 😊\n\nLooking forward to seeing you! 💖`
       );
+      showStampAndSendAnimation();
 
       sessionEnded = true;
       awaitingConfirmation = false;
@@ -329,6 +325,7 @@ async function respond(userText) {
           guestNames.length > 1 ? "s" : ""
         }. <br><br>We kindly ask that these seats are joyfully filled on the day of the event, so the heartfelt efforts and careful preparations of the bride and groom can be fully cherished. 😊<br><br>Looking forward to seeing you! 💖`
       );
+      showStampAndSendAnimation();
 
       sessionEnded = true;
       idleStage = 0;
@@ -477,3 +474,12 @@ window.addEventListener("resize", () => {
 document.addEventListener("DOMContentLoaded", () => {
   scrollToBottom();
 });
+
+function showStampAndSendAnimation() {
+  const envelope = document.getElementById("envelope-animation");
+  envelope.classList.add("animate");
+
+  setTimeout(() => {
+    envelope.classList.remove("animate");
+  }, 2500); // Reset so it can be triggered again if needed
+}

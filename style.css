@@ -226,3 +226,59 @@ button#send-button:hover {
     transform: translateY(0);
   }
 }
+
+#envelope-animation {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 999;
+}
+
+.envelope {
+  position: relative;
+  width: 120px;
+}
+
+.envelope img {
+  width: 100%;
+  display: block;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.stamp {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  transform: scale(0);
+  opacity: 0;
+  transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+}
+
+#envelope-animation.animate {
+  animation: flyAway 2.5s ease-out forwards;
+}
+
+#envelope-animation.animate .stamp {
+  transform: scale(1);
+  opacity: 1;
+}
+
+@keyframes flyAway {
+  0% {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translateX(-50%) translateY(-120px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-50%) translateY(-300px);
+    opacity: 0;
+  }
+}
