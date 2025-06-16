@@ -258,7 +258,6 @@ async function respond(userText) {
           guestNames.length > 1 ? "s" : ""
         }. \n\nWe kindly ask that these seats are joyfully filled on the day of the event, so the heartfelt efforts and careful preparations of the bride and groom can be fully cherished. 😊\n\nLooking forward to seeing you! 💖`
       );
-      showStampAndSendAnimation();
 
       sessionEnded = true;
       awaitingConfirmation = false;
@@ -325,7 +324,6 @@ async function respond(userText) {
           guestNames.length > 1 ? "s" : ""
         }. <br><br>We kindly ask that these seats are joyfully filled on the day of the event, so the heartfelt efforts and careful preparations of the bride and groom can be fully cherished. 😊<br><br>Looking forward to seeing you! 💖`
       );
-      showStampAndSendAnimation();
 
       sessionEnded = true;
       idleStage = 0;
@@ -474,12 +472,3 @@ window.addEventListener("resize", () => {
 document.addEventListener("DOMContentLoaded", () => {
   scrollToBottom();
 });
-
-function showStampAndSendAnimation() {
-  const envelope = document.getElementById("envelope-animation");
-  envelope.classList.add("animate");
-
-  setTimeout(() => {
-    envelope.classList.remove("animate");
-  }, 2500); // Reset so it can be triggered again if needed
-}
