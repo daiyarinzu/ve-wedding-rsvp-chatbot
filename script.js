@@ -465,10 +465,22 @@ window.onload = () => {
   }, 2500); // Give time for bot message animation
 };
 
-window.addEventListener("resize", () => {
-  scrollToBottom();
+function scrollToBottom() {
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// Ensure chat is scrolled to bottom on load (especially for mobile)
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    scrollToBottom();
+    input.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, 1000); // Adjust delay if needed
 });
 
-document.addEventListener("DOMContentLoaded", () => {
-  scrollToBottom();
+// Re-scroll when keyboard pushes things on mobile
+window.addEventListener("resize", () => {
+  setTimeout(() => {
+    scrollToBottom();
+    input.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, 300);
 });

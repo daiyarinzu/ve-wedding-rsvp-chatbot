@@ -35,6 +35,8 @@ body {
   box-shadow: 0 6px 30px rgba(0, 0, 0, 0.1);
   border-radius: 16px;
   overflow: hidden;
+
+  scroll-behavior: smooth;
 }
 
 /* Chat Box (scrollable) */
