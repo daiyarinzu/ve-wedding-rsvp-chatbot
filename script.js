@@ -367,7 +367,7 @@ async function respond(userText) {
   // Step 4: Name validation
   if (!isValidName(userText)) {
     botReplyWithTyping(
-      "Hmm... that doesn’t look like a valid name. Could you double-check and try again? 😊"
+      "Hmm... that doesn’t look like a valid name or a FULL name. Could you double-check and try again? 😊"
     );
     return;
   }
