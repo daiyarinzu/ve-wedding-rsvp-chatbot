@@ -37,6 +37,11 @@ body {
   overflow: hidden;
 
   scroll-behavior: smooth;
+  display: none;
+}
+
+.chat-container.active {
+  display: flex; /* or block, depending on your layout */
 }
 
 /* Chat Box (scrollable) */
@@ -238,4 +243,42 @@ button#send-button:hover {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.lang-buttons {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  width: 100%;
+  max-width: 100%;
+  background-color: #b9b09a;
+  padding: 1.5em 1em;
+  border: 1px solid #ddd;
+  box-sizing: border-box;
+  z-index: 10;
+
+  text-align: center;
+}
+
+.lang-buttons p {
+  margin-bottom: 1em;
+  font-weight: bold;
+}
+
+.lang-buttons .lang-btn {
+  display: inline-block;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  padding: 0.5em 1em;
+  margin: 0 0.5em;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.lang-buttons .lang-btn:hover {
+  background-color: #e0e0e0;
 }
