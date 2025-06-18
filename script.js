@@ -66,26 +66,21 @@ function resetIdleTimer() {
 
 // Validate name format and quality
 function isValidName(name) {
-  const trimmed = name.trim();
-  const allowList = [
-    "kerthyllaine",
-    "zaynab faith kerthyllaine pajo",
-    "johann schneider lalaan",
-    "schneider",
-  ];
-  const lowered = trimmed.toLowerCase();
-  if (allowList.includes(lowered)) return true;
+  const cleaned = name.trim();
 
-  if (trimmed.length < 2 || trimmed.length > 50) return false;
-  if (!/[a-zA-Z]/.test(trimmed)) return false;
+  // Allow length up to 120 and minimum of 2 characters
+  if (cleaned.length < 2 || cleaned.length > 120) return false;
 
-  const vowels = (trimmed.match(/[aeiou]/gi) || []).length;
-  const consonants = (trimmed.match(/[bcdfghjklmnpqrstvwxyz]/gi) || []).length;
-  if (vowels === 0 || consonants === 0) return false;
+  // Require at least 2 words
+  const wordCount = cleaned.split(/\s+/).length;
+  if (wordCount < 2) return false;
 
-  // Looser gibberish detection — block only extreme cases
-  if (/(?:[aeiou]{6,}|[bcdfghjklmnpqrstvwxyz]{6,})/i.test(trimmed))
-    return false;
+  // Accept letters, spaces, accents, hyphens, apostrophes (straight and curly), and periods
+  const pattern = /^[a-zA-ZÀ-ÿ\u00f1\u00d1\u0100-\u024F\s.'’\-]+$/u;
+  if (!pattern.test(cleaned)) return false;
+
+  // Optional gibberish check: 6+ consonants in a row (weakened to reduce false positives)
+  if (/[bcdfghjklmnpqrstvwxyz]{7,}/i.test(cleaned)) return false;
 
   return true;
 }
