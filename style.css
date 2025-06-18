@@ -7,6 +7,10 @@ body {
   font-family: "Poppins", Arial, sans-serif;
   font-size: 13px;
   background: #f3ecdc;
+
+  /* Prevent extra resize issues on mobile */
+  overscroll-behavior-y: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Background wrapper for centering */
@@ -24,7 +28,7 @@ body {
 .chat-container {
   width: 100%;
   max-width: 480px;
-  height: 90vh;
+  height: 100vh; /* ← changed from 90vh */
   display: flex;
   flex-direction: column;
   background-color: #fffef7;
@@ -38,8 +42,11 @@ body {
   flex: 1;
   overflow-y: auto;
   display: flex;
-  flex-direction: column-reverse; /* 👈 KEY TO FLOW */
+  flex-direction: column-reverse;
   padding: 10px;
+
+  /* Prevent layout jumping when keyboard appears */
+  min-height: 0;
 }
 
 /* Custom Scrollbar Styling */
@@ -167,6 +174,10 @@ form {
   border-top: 1px solid #ddd;
   gap: 8px;
   align-items: center;
+
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
 }
 
 input[type="text"] {
