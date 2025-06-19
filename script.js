@@ -333,7 +333,7 @@ function addMessage(text, sender = "bot", isTyping = false) {
   }
 
   // Display it
-  chatBox.prepend(wrapper);
+  chatBox.appendChild(wrapper);
   scrollToBottom();
 
   // Play pop sound if bot (and not typing)
@@ -629,7 +629,7 @@ window.onload = () => {
 
 function scrollToBottom() {
   chatBox.scrollTo({
-    top: 0,
+    top: chatBox.scrollHeight,
     behavior: "smooth",
   });
 }
