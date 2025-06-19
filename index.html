@@ -2,7 +2,11 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+
+    <!-- Ensures proper rendering and touch zooming on mobile devices -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- SEO: Description for search engines -->
     <meta
       name="description"
       content="RSVP easily for Voughn and Emelyn's wedding using our elegant chatbot."
@@ -10,18 +14,21 @@
     <title>Voughn & Emelyn's Wedding RSVP</title>
     <link rel="icon" type="image/png" href="favicon.png" />
 
-    <!-- Links the custom stylesheet for layout and design -->
+    <!-- Preload CSS and JS for faster loading -->
     <link rel="preload" href="style.css" as="style" />
     <link rel="preload" href="script.js" as="script" />
+
+    <!-- Main stylesheet -->
     <link rel="stylesheet" href="style.css" />
   </head>
 
   <body class="prevent-scroll">
+    <!-- Message for users with JavaScript disabled -->
     <noscript>
       <p>Please enable JavaScript to use the RSVP chatbot.</p>
     </noscript>
 
-    <!-- Language selection buttons (shown before chat starts) -->
+    <!-- Language selection section -->
     <div class="lang-buttons" id="lang-buttons">
       <p>Please select your preferred language:</p>
       <button class="lang-btn" data-lang="en">🇺🇸 English</button>
@@ -29,16 +36,15 @@
       <button class="lang-btn" data-lang="bis">🇵🇭 Bisaya</button>
     </div>
 
-    <!-- Outer container for placing a background or images behind the chatbot -->
+    <!-- Wrapper for background styling -->
     <div class="background-wrapper">
-      <!-- Main chatbot UI box -->
+      <!-- Main chat container -->
       <div class="chat-container" id="chat-container">
-        <!-- Where messages from the user and bot will be displayed -->
+        <!-- Chat messages will appear here -->
         <div id="chat-box" class="chat-box"></div>
 
-        <!-- Form that handles user input and submission -->
+        <!-- User input form for sending messages -->
         <form id="chat-form">
-          <!-- Text input field for the guest to type names -->
           <input
             type="text"
             id="user-input"
@@ -47,7 +53,7 @@
             required
           />
 
-          <!-- Send button, customized with a paper airplane SVG icon -->
+          <!-- Send button with SVG icon -->
           <button type="submit" id="send-button">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -56,15 +62,13 @@
               fill="currentColor"
               viewBox="0 0 24 24"
             >
-              <!-- SVG path that draws the paper airplane shape -->
               <path d="M2 21l21-9L2 3v7l15 2-15 2v7z" />
             </svg>
           </button>
         </form>
       </div>
     </div>
-
-    <!-- Main JavaScript logic for chatbot interaction -->
+    <!-- Main JavaScript file for chatbot functionality -->
     <script src="script.js"></script>
   </body>
 </html>

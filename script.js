@@ -1,30 +1,28 @@
-// DOM Elements
+// --- DOM Elements ---
 const form = document.getElementById("chat-form");
 const input = document.getElementById("user-input");
 const chatBox = document.getElementById("chat-box");
-const popSound = new Audio("pop.mp3");
+const popSound = new Audio("pop.mp3"); // Sound for bot replies
 
-// Guest names and session state
-const guestNames = [];
-let sessionEnded = false;
-let idleTimer = null;
-let idleStage = 0;
+// --- State Variables ---
+const guestNames = []; // Stores guest names entered in this session
+let sessionEnded = false; // Tracks if RSVP session is finished
+let idleTimer = null; // Timer for user inactivity
+let idleStage = 0; // Tracks idle message stage
+let maxSeats = null; // Number of seats allowed (from user input)
+let awaitingSeatCount = true; // Waiting for user to enter seat count
+let awaitingConfirmation = false; // Waiting for user to confirm names
+let partialConfirmationShown = false; // If partial confirmation was shown
 
-let maxSeats = null; // Total allowed seats (from user input)
-let awaitingSeatCount = true; // Are we waiting for the user to send the seat count?
-
-let awaitingConfirmation = false;
-let partialConfirmationShown = false;
-
-// JSONBin API (used to store and fetch names)
+// --- JSONBin API for persistent storage ---
 const JSONBIN_API_URL = "https://api.jsonbin.io/v3/b/684fb7ec8561e97a5025038b";
 const JSONBIN_API_KEY =
   "$2a$10$M.xkZjGz0DiD595oDUW9SeM8MrkagJMaBA4oxqjAHxc8jesa/x/Zu";
 
-// Global language setting
-let selectedLang = "en"; // default language
+// --- Language and Translations ---
+let selectedLang = "en"; // Default language
 
-// All translatable bot messages
+// All bot messages in multiple languages
 const messages = {
   greeting: {
     en: "💌 Greetings!\n\nYou are invited to the wedding of Voughn and Emelyn!\n\nBased on the number of seats shown in your electronic invitation, kindly tell us how many guest(s) will be attending. 😊",
@@ -93,8 +91,8 @@ const messages = {
   },
   idleCheckIn: {
     en: "👋 Just checking in — are you still there? You can keep adding names or reply 'No' to finish.",
-    tl: "👋 Kumusta? Nandiyan ka pa ba? Pwede ka pa magdagdag ng pangalan o mag-reply ng 'No' para matapos.",
-    bis: "👋 Kumusta? Ania pa ba ka? Pwede pa ka magdugang og ngalan o mag-reply og 'No' para matapos.",
+    tl: "👋 Kumusta? Nandiyan ka pa ba? Pwede ka pa magdagdag ng pangalan o mag-reply ng 'Hindi' para matapos.",
+    bis: "👋 Kumusta? Ania pa ba ka? Pwede pa ka magdugang og ngalan o mag-reply og 'Dili' para matapos.",
   },
   idleTimeout: {
     en: "⏱️ Looks like you're away. We'll end this RSVP session for now. You can start again anytime. 😊",
@@ -103,8 +101,8 @@ const messages = {
   },
   partialList: {
     en: "🎉 Thank you! Here are the name(s) you've sent us:<br><br>{names}<br><br>You still have {remaining} seat(s) left. Please enter {needed} or reply 'No' to finish.",
-    tl: "🎉 Salamat po! Narito ang mga pangalan na inyong ibinigay:<br><br>{names}<br><br>May natitira pa kayong {remaining} upuan. Pakienter na lang po ang {needed} o mag-reply ng 'No' para matapos.",
-    bis: "🎉 Salamat kaayo! Mao ni ang mga pangalan nga inyong gi-submit:<br><br>{names}<br><br>Naay nabilin nga {remaining} ka lingkuranan. Palihug isulat ang {needed} o mag-reply og 'No' para matapos.",
+    tl: "🎉 Salamat po! Narito ang mga pangalan na inyong ibinigay:<br><br>{names}<br><br>May natitira pa kayong {remaining} upuan. Pakienter na lang po ang {needed} o mag-reply ng 'Hindi' para matapos.",
+    bis: "🎉 Salamat kaayo! Mao ni ang mga pangalan nga inyong gi-submit:<br><br>{names}<br><br>Naay nabilin nga {remaining} ka lingkuranan. Palihug isulat ang {needed} o mag-reply og 'Dili' para matapos.",
   },
   moreNames: {
     en: {
@@ -160,6 +158,7 @@ const messages = {
   },
 };
 
+// --- Word-to-number mapping for seat count input ---
 const wordToNumber = {
   // English
   one: 1,
@@ -198,19 +197,19 @@ const wordToNumber = {
   napulo: 10,
 };
 
-// Wait for language selection before starting chat
+// --- Language Selection Handler ---
 document.querySelectorAll(".lang-btn").forEach((button) => {
   button.addEventListener("click", (e) => {
     const lang = button.getAttribute("data-lang");
     selectedLang = lang;
 
-    // Hide the language buttons
+    // Hide language selection buttons
     document.getElementById("lang-buttons").style.display = "none";
 
-    // Show the chat container
+    // Show chat container
     document.querySelector(".chat-container").classList.add("active");
 
-    // Start the chat if valid RSVP link
+    // Start chat if user came from RSVP button
     if (didClickRSVP()) {
       botReplyWithTyping(getMessage("greeting"), 1500);
       setTimeout(() => resetIdleTimer(), 2000);
@@ -223,14 +222,17 @@ document.querySelectorAll(".lang-btn").forEach((button) => {
   });
 });
 
+// --- Prevent scrolling when chat is active ---
 document.body.classList.remove("prevent-scroll");
+
+// --- Utility Functions ---
 
 // Helper to pick a random item (used for random replies)
 function getRandomItem(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-// Capitalize names properly
+// Capitalize each word in a name
 function capitalizeName(name) {
   return name
     .trim()
@@ -240,6 +242,7 @@ function capitalizeName(name) {
     .join(" ");
 }
 
+// Get a translated message with replacements
 function getMessage(key, replacements = {}) {
   let template = messages[key]?.[selectedLang] || messages[key]?.en || "";
   for (const [k, v] of Object.entries(replacements)) {
@@ -248,6 +251,7 @@ function getMessage(key, replacements = {}) {
   return template;
 }
 
+// Get pluralization for name count
 function getNamePlural(count) {
   switch (selectedLang) {
     case "tl":
@@ -259,6 +263,7 @@ function getNamePlural(count) {
   }
 }
 
+// Get "more names" string for prompts
 function getMoreNames(count) {
   if (count === 1) {
     return messages.moreNames[selectedLang].one;
@@ -267,6 +272,7 @@ function getMoreNames(count) {
   }
 }
 
+// Bot replies with typing animation, then message after delay
 function botReplyWithTyping(message, delay = 1000) {
   console.log("🤖 Bot replying with message:", message); // <--- ADD THIS
   const typingBubble = addMessage("", "bot", true);
@@ -276,6 +282,8 @@ function botReplyWithTyping(message, delay = 1000) {
     scrollToBottom();
   }, delay);
 }
+
+// --- Idle Timer Logic ---
 
 // Reset idle timer and send follow-up if user is inactive
 function resetIdleTimer() {
@@ -296,37 +304,41 @@ function resetIdleTimer() {
       }
     },
     idleStage === 0 ? 2 * 60 * 1000 : 3 * 60 * 1000
-  ); // 2min > 3min
+  ); // 2min then 3min
 }
 
-// Validate name format and quality
+// --- Name Validation ---
+
+// Checks if a name is valid (length, format, not gibberish)
 function isValidName(name) {
   const cleaned = name.trim();
 
-  // Allow length up to 120 and minimum of 2 characters
+  // Length check
   if (cleaned.length < 2 || cleaned.length > 120) return false;
 
   // Require at least 2 words
   const wordCount = cleaned.split(/\s+/).length;
   if (wordCount < 2) return false;
 
-  // Accept letters, spaces, accents, hyphens, apostrophes (straight and curly), and periods
+  // Accept only valid characters
   const pattern = /^[a-zA-ZÀ-ÿ\u00f1\u00d1\u0100-\u024F\s.'’\-]+$/u;
   if (!pattern.test(cleaned)) return false;
 
-  // Optional gibberish check: 6+ consonants in a row (weakened to reduce false positives)
+  // Reject gibberish (6+ consonants in a row)
   if (/[bcdfghjklmnpqrstvwxyz]{7,}/i.test(cleaned)) return false;
 
   return true;
 }
 
-// Format current time as HH:MM
+// --- Message Rendering ---
+
+// Format time as HH:MM
 function formatTime(date) {
   const options = { hour: "2-digit", minute: "2-digit" };
   return date.toLocaleTimeString([], options);
 }
 
-// Add a message to the chat (user or bot)
+// Add a message bubble to the chat
 function addMessage(text, sender = "bot", isTyping = false) {
   const wrapper = document.createElement("div");
   const time = formatTime(new Date());
@@ -341,14 +353,14 @@ function addMessage(text, sender = "bot", isTyping = false) {
   messageBubble.classList.add("message", sender);
 
   if (isTyping) {
-    // Show typing dots for bot
+    // Show typing animation for bot
     messageBubble.classList.add("typing");
     messageBubble.innerHTML = `<div class="typing-dots"><span></span><span></span><span></span></div>`;
   } else {
     messageBubble.innerHTML = text.replace(/\n/g, "<br>");
   }
 
-  // Add avatar if it's from the bot
+  // Add avatar for bot messages
   if (sender === "bot") {
     const avatar = document.createElement("img");
     avatar.src = "avatar.png";
@@ -372,11 +384,11 @@ function addMessage(text, sender = "bot", isTyping = false) {
     wrapper.appendChild(timestamp);
   }
 
-  // Display it
+  // Add to chat box
   chatBox.appendChild(wrapper);
   scrollToBottom();
 
-  // Play pop sound if bot (and not typing)
+  // Play pop sound for bot replies
   if (!isTyping && sender === "bot") {
     try {
       popSound.currentTime = 0;
@@ -384,14 +396,16 @@ function addMessage(text, sender = "bot", isTyping = false) {
     } catch (err) {}
   }
 
-  // ✨ Add small animation delay
+  // Animation
   messageWrapper.style.animationDelay = "0s";
   messageWrapper.style.animationFillMode = "both";
 
   return wrapper;
 }
 
-// Fetch RSVP list from JSONBin
+// --- API: Fetch and Save Names ---
+
+// Fetch existing RSVP names from JSONBin
 async function fetchExistingNames() {
   try {
     const response = await fetch(`${JSONBIN_API_URL}/latest`, {
@@ -423,7 +437,8 @@ async function saveNamesToBin(names) {
   }
 }
 
-// Handle form submission
+// --- Form Submission Handler ---
+
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   const userText = input.value.trim();
@@ -433,11 +448,12 @@ form.addEventListener("submit", (e) => {
   input.value = "";
   setTimeout(scrollToBottom, 300);
 
-  // 🛠️ FIX: Bring input field back into view after sending
+  // Bring input field into view after sending
   setTimeout(() => {
     input.scrollIntoView({ behavior: "smooth", block: "end" });
   }, 100);
 
+  // If session ended or not from RSVP, block further input
   if (sessionEnded || !didClickRSVP()) {
     botReplyWithTyping(getMessage("mustUseRSVPButton"));
     return;
@@ -450,8 +466,10 @@ form.addEventListener("submit", (e) => {
   }, 600);
 });
 
-// Handle bot response logic
+// --- Main Bot Logic ---
+
 async function respond(userText) {
+  // Step 1: Handle confirmation (Yes/No)
   if (awaitingConfirmation) {
     const confirmKeywords = {
       en: ["yes", "yep", "yeah", "correct", "right", "sure", "ok", "okay"],
@@ -465,11 +483,12 @@ async function respond(userText) {
       confirmKeywords[selectedLang]?.includes(lowerConfirm);
 
     if (isYes) {
+      // Save names to JSONBin
       const existingNames = await fetchExistingNames();
       const newNames = [...existingNames];
 
       for (const name of guestNames) {
-        // Prevent saving duplicates from other users
+        // Prevent duplicates
         if (
           !existingNames
             .map((n) => n.toLowerCase().trim())
@@ -500,8 +519,7 @@ async function respond(userText) {
 
   const lower = userText.toLowerCase();
 
-  // Step 1: Handle "no"
-
+  // Step 2: Handle "no" (user not attending or wants to finish)
   const noKeywords = {
     en: ["no", "nope", "none", "nah", "not going", "not attending"],
     tl: ["hindi", "wala", "ayoko", "mali", "hindi gusto", "hindi na"],
@@ -527,6 +545,7 @@ async function respond(userText) {
       clearTimeout(idleTimer);
       partialConfirmationShown = false;
     } else if (guestNames.length < maxSeats && !partialConfirmationShown) {
+      // Show partial list and ask for confirmation
       const remaining = maxSeats - guestNames.length;
       const finalList = guestNames.map((name) => `• ${name}`).join("<br>");
       const needed = getMoreNames(remaining);
@@ -539,6 +558,7 @@ async function respond(userText) {
 
       partialConfirmationShown = true;
     } else if (guestNames.length < maxSeats && partialConfirmationShown) {
+      // Save partial list
       const finalList = guestNames.map((name) => `• ${name}`).join("<br>");
 
       const existingNames = await fetchExistingNames();
@@ -572,8 +592,8 @@ async function respond(userText) {
       partialConfirmationShown = false;
       return;
     } else {
-      // User wants to edit the names
-      guestNames.length = 0; // Clear the names
+      // User wants to edit names
+      guestNames.length = 0; // Clear names
       awaitingConfirmation = false;
       botReplyWithTyping(getMessage("reenterNames"));
     }
@@ -581,17 +601,17 @@ async function respond(userText) {
     return;
   }
 
-  // Step 2: Awaiting seat count
+  // Step 3: Awaiting seat count
   if (awaitingSeatCount) {
     const input = userText.trim().toLowerCase();
     let seatCount = parseInt(input);
 
-    // If it's not a number, try matching worded number
+    // Try to match worded numbers
     if (isNaN(seatCount) && wordToNumber[input]) {
       seatCount = wordToNumber[input];
     }
 
-    // Validate final result
+    // Validate seat count
     if (isNaN(seatCount) || seatCount < 1 || seatCount > 10) {
       botReplyWithTyping(getMessage("invalidSeatCount"));
     } else {
@@ -609,7 +629,7 @@ async function respond(userText) {
     return;
   }
 
-  // Step 3: Already reached max?
+  // Step 4: Already reached max seats?
   if (guestNames.length >= maxSeats) {
     botReplyWithTyping(
       getMessage("maxNamesReached")
@@ -622,17 +642,19 @@ async function respond(userText) {
     return;
   }
 
-  // Step 4: Name validation
+  // Step 5: Name validation
   if (!isValidName(userText)) {
     botReplyWithTyping(getMessage("invalidName"));
     return;
   }
 
+  // Format name for storage
   const formattedName = userText
     .trim()
     .toLowerCase()
     .replace(/\b\w/g, (char) => char.toUpperCase());
 
+  // Check for duplicates in storage
   if (!awaitingConfirmation) {
     const existingNames = await fetchExistingNames();
     const lowerNames = existingNames.map((n) => n.toLowerCase().trim());
@@ -643,10 +665,12 @@ async function respond(userText) {
     }
   }
 
+  // Add name to session
   guestNames.push(formattedName);
 
   const remaining = maxSeats - guestNames.length;
 
+  // If all names collected, ask for confirmation
   if (guestNames.length === maxSeats) {
     const finalList = guestNames.map((name) => `• ${name}`).join("<br>");
     botReplyWithTyping(
@@ -656,7 +680,7 @@ async function respond(userText) {
     return;
   }
 
-  // Multilingual dynamic prompt if still seats remaining
+  // Otherwise, prompt for more names
   const seatLabel = remaining === 1 ? getMessage("seat") : getMessage("seats");
   const promptTemplate = getRandomItem(getMessage("moreNamesPrompt"));
   const finalReply = promptTemplate
@@ -666,29 +690,23 @@ async function respond(userText) {
   botReplyWithTyping(finalReply);
 }
 
-// Detect if user came from RSVP button on your website
+// --- RSVP Button Detection ---
+
+// Checks if user came from RSVP button (via URL param)
 function didClickRSVP() {
   const urlParams = new URLSearchParams(window.location.search);
   const value = urlParams.get("rsvp");
   return value === "1" || value === "true";
 }
 
-// On page load, greet user or block if not from RSVP link
+// --- Page Load Events ---
+
+// On page load, scroll chat to bottom after a delay
 window.onload = () => {
-  /*if (didClickRSVP()) {
-    botReplyWithTyping(getMessage("greeting"), 1500);
-
-    setTimeout(() => {
-      resetIdleTimer();
-    }, 2000);
-  } else {
-    botReplyWithTyping(getMessage("mustUseRSVPButton"), 1000);
-  }*/
-
-  // ✨ Add a longer timeout to scroll after messages render
-  setTimeout(() => scrollToBottom(), 2500); // Give time for bot message animation
+  setTimeout(() => scrollToBottom(), 2500);
 };
 
+// Scroll chat to bottom
 function scrollToBottom() {
   const chatBox = document.getElementById("chat-box");
   requestAnimationFrame(() => {
@@ -704,10 +722,10 @@ window.addEventListener("load", () => {
   setTimeout(() => {
     scrollToBottom();
     input.scrollIntoView({ behavior: "smooth", block: "end" });
-  }, 1000); // Adjust delay if needed
+  }, 1000);
 });
 
-// Re-scroll when keyboard pushes things on mobile
+// Re-scroll when keyboard appears on mobile
 window.addEventListener("resize", () => {
   setTimeout(() => {
     scrollToBottom();
