@@ -389,6 +389,11 @@ form.addEventListener("submit", (e) => {
   addMessage(userText, "user");
   input.value = "";
 
+  // 🛠️ FIX: Bring input field back into view after sending
+  setTimeout(() => {
+    input.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, 100);
+
   if (sessionEnded || !didClickRSVP()) {
     botReplyWithTyping(getMessage("mustUseRSVPButton"));
     return;
