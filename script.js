@@ -176,6 +176,9 @@ document.querySelectorAll(".lang-btn").forEach((button) => {
     if (didClickRSVP()) {
       botReplyWithTyping(getMessage("greeting"), 1500);
       setTimeout(() => resetIdleTimer(), 2000);
+      setTimeout(() => {
+        scrollToBottom();
+      }, 2500);
     } else {
       botReplyWithTyping(getMessage("mustUseRSVPButton"), 1000);
     }
@@ -388,6 +391,7 @@ form.addEventListener("submit", (e) => {
 
   addMessage(userText, "user");
   input.value = "";
+  setTimeout(scrollToBottom, 300);
 
   // 🛠️ FIX: Bring input field back into view after sending
   setTimeout(() => {
