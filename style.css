@@ -282,3 +282,31 @@ button#send-button:hover {
 .lang-buttons .lang-btn:hover {
   background-color: #e0e0e0;
 }
+
+@media (max-width: 768px) {
+  .chat-container {
+    height: 100vh;
+    border-radius: 0; /* Optional: remove corner radius for full-screen mobile */
+  }
+
+  #chat-form {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #f4f1eb;
+    border-top: 1px solid #ccc;
+    padding: 10px 16px;
+    z-index: 20; /* stays above content */
+  }
+
+  .chat-box {
+    padding-bottom: 80px; /* reserve space so last messages aren't hidden */
+  }
+
+  .background-wrapper {
+    height: 100vh;
+    padding: 0;
+    align-items: stretch;
+  }
+}
