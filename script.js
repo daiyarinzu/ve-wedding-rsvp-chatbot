@@ -624,7 +624,10 @@ window.onload = () => {
 };
 
 function scrollToBottom() {
-  chatBox.scrollTop = chatBox.scrollHeight;
+  chatBox.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
 }
 
 // Ensure chat is scrolled to bottom on load (especially for mobile)
