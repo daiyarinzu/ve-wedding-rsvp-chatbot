@@ -35,9 +35,29 @@ const messages = {
     bis: "Hi! Para mag-RSVP, palihug i-click una ang RSVP button sa among website aron ma-record namo sakto ang inyong mga ngalan. 😊",
   },
   seatCountConfirmed: {
-    en: "Great! You may now RSVP up to {count} {guests}.\n\nPlease reply with the guest(s) full name one by one. 😊",
-    tl: "Ayos! Maaari ka nang mag-RSVP ng hanggang {count} {guests}.\n\nPaki-reply ang buong pangalan ng bawat bisita isa-isa. 😊",
-    bis: "Sige! Pwede naka mag-RSVP og hangtod {count} ka {guests}.\n\nPalihug i-reply ang full name sa matag-usa ka bisita. 😊",
+    en: "Great! You may now RSVP up to {count} {guests}.",
+    tl: "Ayos! Maaari ka nang mag-RSVP ng hanggang {count} {guests}.",
+    bis: "Sige! Pwede naka mag-RSVP og hangtod {count} ka {guests}.",
+  },
+  guestInstructions: {
+    en: {
+      single:
+        "Please reply with the guest's FULL name. 😊\n\n(sample: Juan P. Dela Cruz)",
+      multiple:
+        "Please also note that I can only receive one name at a time, so please reply with the guests FULL names one by one. 😊\n\n(sample: Juan P. Dela Cruz)",
+    },
+    tl: {
+      single:
+        "Pakireply po ng BUONG pangalan ng bisita. 😊\n\n(Halimbawa: Juan P. Dela Cruz)",
+      multiple:
+        "Pakitandaan din po na isang pangalan lang ang matatanggap ko sa bawat pagkakataon, kaya pakireply na lang po paisa-isa ang BUONG pangalan ng bawat bisita. 😊\n\n(Halimbawa: Juan P. Dela Cruz)",
+    },
+    bis: {
+      single:
+        "Palihug isulat ang KUMPLETONG ngalan sa bisita. 😊\n\n(Pananglitan: Juan P. Dela Cruz)",
+      multiple:
+        "Palihug hinumdumi nga usa ka ngalan lang ang akong madawat sa usa ka hiagayon, busa isulat tag-isa ang KUMPLETONG ngalan sa matag bisita. 😊\n\n(Pananglitan: Juan P. Dela Cruz)",
+    },
   },
   guest: {
     en: "guest",
@@ -50,19 +70,19 @@ const messages = {
     bis: "mga bisita",
   },
   invalidSeatCount: {
-    en: "⚠️ Please enter a valid number of seats (1–10).",
-    tl: "⚠️ Pakilagay po ang tamang bilang ng upuan (1–10).",
-    bis: "⚠️ Palihug isulat ang sakto nga ihap sa lingkuranan (1–10).",
+    en: "⚠️ Please enter a valid number of seats (1–5).",
+    tl: "⚠️ Pakilagay po ang tamang bilang ng upuan (1–5).",
+    bis: "⚠️ Palihug isulat ang sakto nga ihap sa lingkuranan (1–5).",
   },
   invalidName: {
     en: "Hmm... that doesn’t look like a valid name or a FULL name. Could you double-check and try again? 😊",
-    tl: "Hmm... parang hindi valid ang pangalan o hindi buo. Paki-check po ulit at subukang muli. 😊",
-    bis: "Hmm... murag dili valid o dili kumpleto ang pangalan. Palihug i-check ug usba. 😊",
+    tl: "Hmm... parang hindi wasto ang pangalan o hindi BUO. Paki-check po ulit at subukang muli. 😊",
+    bis: "Hmm... murag dili tinuod o dili kumpleto ang pangalan. Palihug i-check ug usba. 😊",
   },
   duplicateName: {
     en: "🚫 That guest has already RSVP’d. Please enter other names. Thank you! 😊",
-    tl: "🚫 Nakapag-RSVP na po ang pangalang iyan. Pakilagay po ang ibang pangalan. Salamat! 😊",
-    bis: "🚫 Nakapa-RSVP na na nga ngalan. Palihug sulati ang laing ngalan. Salamat! 😊",
+    tl: "🚫 Nakapag-RSVP na po ang pangalang iyan. Pakilagay po ng ibang pangalan. Salamat! 😊",
+    bis: "🚫 Nakapa-RSVP na na nga ngalan. Palihug sulati ug laing ngalan. Salamat! 😊",
   },
   allNamesCollected: {
     en: '🎉 Thank you! Here are the name(s) you\'ve sent us:<br><br>{names}<br><br>Can you double check if everything is correct? Please reply "Yes" or "No".',
@@ -71,18 +91,18 @@ const messages = {
   },
   rsvpSaved: {
     en: "🎉 Thank you! We've recorded all {count} guest name{plural}.<br><br>We kindly ask that these seats are joyfully filled on the day of the event, so the heartfelt efforts and careful preparations of the bride and groom can be fully cherished. 😊<br><br>Looking forward to seeing you! 💖",
-    tl: "🎉 Maraming salamat! Naitala na po namin ang lahat ng {count} {plural}.<br><br>Inaasahan po namin na ang mga upuang ito ay masayang mapupuno sa araw ng kasal upang ang masusing paghahanda ng bride at groom ay tunay na mapahalagahan. 😊<br><br>Excited na po kaming makita kayo! 💖",
-    bis: "🎉 Daghang salamat! Among natala ang tanan {count} {plural}.<br><br>Nagpaabot mi nga malipayong mapuno ang mga lingkuranan sa adlaw sa kasal, aron ang gugma ug paningkamot sa bride ug groom mapanggaon gyud. 😊<br><br>Excited na kaayo mi makakita ninyo! 💖",
+    tl: "🎉 Maraming salamat! Naitala na po namin ang lahat ng {count}{plural}.<br><br>Inaasahan po namin na ang mga upuang ito ay masayang mapupuno sa araw ng kasal upang ang masusing paghahanda ng bride at groom ay tunay na mapahalagahan. 😊<br><br>Excited na po kaming makita kayo! 💖",
+    bis: "🎉 Daghang salamat! Among natala ang tanan {count}{plural}.<br><br>Nagpaabot mi nga malipayong mapuno ang mga lingkuranan sa adlaw sa kasal, aron ang gugma ug paningkamot sa bride ug groom mapanggaon gyud. 😊<br><br>Excited na kaayo mi makakita ninyo! 💖",
   },
   rsvpSaveError: {
     en: "⚠️ Something went wrong while saving your RSVP. Please try again later.",
     tl: "⚠️ Nagka-problema sa pag-save ng RSVP. Subukan ulit mamaya.",
-    bis: "⚠️ Naay problema sa pag-save sa RSVP. Palihug suwayi og balik unya.",
+    bis: "⚠️ Naay problema sa pag-tipig sa RSVP. Palihug suwayi og balik unya.",
   },
   reenterNames: {
     en: "No problem! Please re-enter the names one by one. 😊",
-    tl: "Walang problema! Pakienter na lang po ulit ang mga pangalan isa-isa. 😊",
-    bis: "Walay problema! Palihug isulat balik ang mga ngalan usa-usa. 😊",
+    tl: "Walang problema! Pakireply na lang po ulit ng mga pangalan paisa-isa. 😊",
+    bis: "Walay problema! Palihug isulat balik tag-isa ang mga ngalan. 😊",
   },
   maxNamesReached: {
     en: "✅ You've already added {count} {guests}. If you need to make changes, please message us directly. 😊",
@@ -92,17 +112,17 @@ const messages = {
   idleCheckIn: {
     en: "👋 Just checking in — are you still there? You can keep adding names or reply 'No' to finish.",
     tl: "👋 Kumusta? Nandiyan ka pa ba? Pwede ka pa magdagdag ng pangalan o mag-reply ng 'Hindi' para matapos.",
-    bis: "👋 Kumusta? Ania pa ba ka? Pwede pa ka magdugang og ngalan o mag-reply og 'Dili' para matapos.",
+    bis: "👋 Kumusta? Ania pa ba ka? Pwede pa ka magdugang og ngalan o mag-reply og 'Dili' para mahuman.",
   },
   idleTimeout: {
     en: "⏱️ Looks like you're away. We'll end this RSVP session for now. You can start again anytime. 😊",
-    tl: "⏱️ Mukhang wala ka na. Tatapusin na namin ang RSVP session. Pwede kang magsimula ulit anytime. 😊",
-    bis: "⏱️ Murag wala naka. Tapuson na namo ang RSVP session karon. Pwede ka magsugod balik anytime. 😊",
+    tl: "⏱️ Mukhang wala ka na. Tatapusin na namin ang RSVP session. Pwede kang magsimula ulit anumang oras. 😊",
+    bis: "⏱️ Murag wala naka. Tapuson na namo ang RSVP session karon. Pwede ka magsugod balik bisan kanus-a. 😊",
   },
   partialList: {
     en: "🎉 Thank you! Here are the name(s) you've sent us:<br><br>{names}<br><br>You still have {remaining} seat(s) left. Please enter {needed} or reply 'No' to finish.",
     tl: "🎉 Salamat po! Narito ang mga pangalan na inyong ibinigay:<br><br>{names}<br><br>May natitira pa kayong {remaining} upuan. Pakienter na lang po ang {needed} o mag-reply ng 'Hindi' para matapos.",
-    bis: "🎉 Salamat kaayo! Mao ni ang mga pangalan nga inyong gi-submit:<br><br>{names}<br><br>Naay nabilin nga {remaining} ka lingkuranan. Palihug isulat ang {needed} o mag-reply og 'Dili' para matapos.",
+    bis: "🎉 Salamat kaayo! Mao ni ang mga pangalan nga inyong gi-submit:<br><br>{names}<br><br>Naay nabilin nga {remaining} ka lingkuranan. Palihug isulat ang {needed} o mag-reply og 'Dili' para mahuman.",
   },
   moreNames: {
     en: {
@@ -255,9 +275,9 @@ function getMessage(key, replacements = {}) {
 function getNamePlural(count) {
   switch (selectedLang) {
     case "tl":
-      return count === 1 ? "" : " mga pangalan";
+      return count === 1 ? " na pangalan" : " na mga pangalan";
     case "bis":
-      return count === 1 ? "" : " ka mga pangalan";
+      return count === 1 ? " ka pangalan" : " ka mga pangalan";
     default:
       return count === 1 ? "" : "s"; // English
   }
@@ -617,14 +637,22 @@ async function respond(userText) {
     } else {
       maxSeats = seatCount;
       awaitingSeatCount = false;
-      botReplyWithTyping(
-        getMessage("seatCountConfirmed")
-          .replace("{count}", maxSeats)
-          .replace(
-            "{guests}",
-            maxSeats > 1 ? getMessage("guests") : getMessage("guest")
-          )
-      );
+
+      // Build confirmation message
+      let confirmationMsg = getMessage("seatCountConfirmed")
+        .replace("{count}", maxSeats)
+        .replace(
+          "{guests}",
+          maxSeats > 1 ? getMessage("guests") : getMessage("guest")
+        );
+
+      // Add custom instruction based on seat count
+      const guestNote =
+        getMessage("guestInstructions")[maxSeats === 1 ? "single" : "multiple"];
+
+      confirmationMsg += "\n\n" + guestNote;
+
+      botReplyWithTyping(confirmationMsg);
     }
     return;
   }
