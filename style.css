@@ -11,12 +11,13 @@ body {
   /* Prevent extra resize issues on mobile */
   overscroll-behavior-y: none;
   -webkit-overflow-scrolling: touch;
+  touch-action: manipulation;
 }
 
 /* Background wrapper for centering */
 .background-wrapper {
   background: linear-gradient(to bottom right, #e8d7ba, #fff);
-  height: 100vh;
+  height: 100dvh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -28,7 +29,7 @@ body {
 .chat-container {
   width: 100%;
   max-width: 480px;
-  height: 100vh; /* ← changed from 90vh */
+  height: 100dvh; /* ← changed from 90vh */
   display: flex;
   flex-direction: column;
   background-color: #fffef7;
@@ -46,19 +47,23 @@ body {
 
 /* Chat Box (scrollable) */
 .chat-box {
-  flex: 1;
+  flex-grow: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   padding: 10px;
-
-  /* Prevent layout jumping when keyboard appears */
-  min-height: 0;
+  max-height: 100%;
 }
 
 /* Custom Scrollbar Styling */
 .chat-box::-webkit-scrollbar {
   width: 8px;
+  visibility: hidden;
+}
+
+.chat-box:hover::-webkit-scrollbar {
+  visibility: visible;
 }
 
 .chat-box::-webkit-scrollbar-track {
@@ -208,29 +213,39 @@ input[type="text"]:focus {
   box-shadow: 0 0 0 3px rgba(140, 82, 255, 0.2);
 }
 
+input[type="text"]::placeholder {
+  color: #999; /* or match your style */
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+input[type="text"]:focus::placeholder {
+  opacity: 0; /* hide placeholder on focus */
+}
+
 /* Send Icon Button */
 button#send-button {
-  background: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #ab73d6ee;
+  color: white;
   border: none;
-  padding: 0 12px;
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #4a2c44;
-  transition: transform 0.2s ease;
+  transition: transform 0.15s ease;
 }
+
 button#send-button svg {
+  width: 20px;
+  height: 20px;
   transform: rotate(-45deg);
-  transition: transform 0.2s ease;
-  width: 28px;
-  height: 28px;
+  fill: white;
 }
-button#send-button:hover svg {
-  transform: rotate(-45deg) scale(1.2);
-}
+
 button#send-button:hover {
-  transform: scale(1.2);
+  transform: scale(1.15);
 }
 
 /* Chat bubble animation */
@@ -284,8 +299,14 @@ button#send-button:hover {
 }
 
 @media (max-width: 768px) {
+  html,
+  body {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
   .chat-container {
-    height: 100vh;
+    height: 100dvh;
     border-radius: 0; /* Optional: remove corner radius for full-screen mobile */
   }
 
@@ -309,4 +330,11 @@ button#send-button:hover {
     padding: 0;
     align-items: stretch;
   }
+}
+
+body.prevent-scroll {
+  overflow: hidden;
+  height: 100vh;
+  position: fixed; /* prevent iOS bounce */
+  width: 100%;
 }

@@ -68,8 +68,8 @@ const messages = {
   },
   allNamesCollected: {
     en: '🎉 Thank you! Here are the name(s) you\'ve sent us:<br><br>{names}<br><br>Can you double check if everything is correct? Please reply "Yes" or "No".',
-    tl: '🎉 Salamat po! Narito ang mga pangalan na inyong ibinigay:<br><br>{names}<br><br>Pakisuri po kung tama lahat. Pakisagot ng "Yes" o "No".',
-    bis: '🎉 Salamat kaayo! Mao ni ang mga pangalan nga inyong gi-submit:<br><br>{names}<br><br>Palihug i-check kung sakto ba tanan. Tubaga lang og "Yes" o "No".',
+    tl: '🎉 Salamat po! Narito ang mga pangalan na inyong ibinigay:<br><br>{names}<br><br>Pakisuri po kung tama lahat. Pakisagot ng "Tama" o "Mali".',
+    bis: '🎉 Salamat kaayo! Mao ni ang mga pangalan nga inyong gi-submit:<br><br>{names}<br><br>Palihug i-check kung sakto ba tanan. Tubaga lang og "Sakto" o "Dili".',
   },
   rsvpSaved: {
     en: "🎉 Thank you! We've recorded all {count} guest name{plural}.<br><br>We kindly ask that these seats are joyfully filled on the day of the event, so the heartfelt efforts and careful preparations of the bride and groom can be fully cherished. 😊<br><br>Looking forward to seeing you! 💖",
@@ -160,6 +160,44 @@ const messages = {
   },
 };
 
+const wordToNumber = {
+  // English
+  one: 1,
+  two: 2,
+  three: 3,
+  four: 4,
+  five: 5,
+  six: 6,
+  seven: 7,
+  eight: 8,
+  nine: 9,
+  ten: 10,
+
+  // Tagalog
+  isa: 1,
+  dalawa: 2,
+  tatlo: 3,
+  apat: 4,
+  lima: 5,
+  anim: 6,
+  pito: 7,
+  walo: 8,
+  siyam: 9,
+  sampu: 10,
+
+  // Bisaya
+  usa: 1,
+  duha: 2,
+  tulo: 3,
+  upat: 4,
+  lima: 5,
+  unom: 6,
+  pito: 7,
+  walo: 8,
+  siyam: 9,
+  napulo: 10,
+};
+
 // Wait for language selection before starting chat
 document.querySelectorAll(".lang-btn").forEach((button) => {
   button.addEventListener("click", (e) => {
@@ -184,6 +222,8 @@ document.querySelectorAll(".lang-btn").forEach((button) => {
     }
   });
 });
+
+document.body.classList.remove("prevent-scroll");
 
 // Helper to pick a random item (used for random replies)
 function getRandomItem(arr) {
@@ -414,13 +454,17 @@ form.addEventListener("submit", (e) => {
 async function respond(userText) {
   if (awaitingConfirmation) {
     const confirmKeywords = {
-      en: ["yes", "yep", "yeah", "correct"],
-      tl: ["oo", "opo", "oo nga", "tama"],
-      bis: ["oo", "u-o", "sakto", "tama"],
+      en: ["yes", "yep", "yeah", "correct", "right", "sure", "ok", "okay"],
+      tl: ["oo", "opo", "oo nga", "tama", "tama po", "sige", "okay"],
+      bis: ["oo", "u-o", "sakto", "tama", "sige", "okay"],
     };
 
     const lowerConfirm = userText.toLowerCase();
-    if (confirmKeywords[selectedLang]?.includes(lowerConfirm)) {
+    const isYes =
+      confirmKeywords.en.includes(lowerConfirm) ||
+      confirmKeywords[selectedLang]?.includes(lowerConfirm);
+
+    if (isYes) {
       const existingNames = await fetchExistingNames();
       const newNames = [...existingNames];
 
@@ -457,7 +501,17 @@ async function respond(userText) {
   const lower = userText.toLowerCase();
 
   // Step 1: Handle "no"
-  if (["no", "nope", "none"].includes(lower)) {
+
+  const noKeywords = {
+    en: ["no", "nope", "none", "nah", "not going", "not attending"],
+    tl: ["hindi", "wala", "ayoko", "mali", "hindi gusto", "hindi na"],
+    bis: ["dili", "wala", "ayaw", "mali", "dili gusto", "dili na"],
+  };
+
+  const isNo =
+    noKeywords.en.includes(lower) || noKeywords[selectedLang]?.includes(lower);
+
+  if (isNo) {
     if (idleStage === 1 && guestNames.length === 0) {
       botReplyWithTyping(getMessage("noRSVP"));
       sessionEnded = true;
@@ -529,7 +583,15 @@ async function respond(userText) {
 
   // Step 2: Awaiting seat count
   if (awaitingSeatCount) {
-    const seatCount = parseInt(userText);
+    const input = userText.trim().toLowerCase();
+    let seatCount = parseInt(input);
+
+    // If it's not a number, try matching worded number
+    if (isNaN(seatCount) && wordToNumber[input]) {
+      seatCount = wordToNumber[input];
+    }
+
+    // Validate final result
     if (isNaN(seatCount) || seatCount < 1 || seatCount > 10) {
       botReplyWithTyping(getMessage("invalidSeatCount"));
     } else {
@@ -628,9 +690,12 @@ window.onload = () => {
 };
 
 function scrollToBottom() {
-  chatBox.scrollTo({
-    top: chatBox.scrollHeight,
-    behavior: "smooth",
+  const chatBox = document.getElementById("chat-box");
+  requestAnimationFrame(() => {
+    chatBox.scrollTo({
+      top: chatBox.scrollHeight,
+      behavior: "smooth",
+    });
   });
 }
 
