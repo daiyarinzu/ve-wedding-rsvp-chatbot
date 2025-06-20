@@ -90,9 +90,9 @@ const messages = {
     bis: '🎉 Salamat kaayo! Mao ni ang mga pangalan nga inyong gi-submit:<br><br>{names}<br><br>Palihug i-check kung sakto ba tanan. Tubaga lang og "Sakto" o "Dili".',
   },
   rsvpSaved: {
-    en: "🎉 Thank you! We've recorded all {count} guest name{plural}.<br><br>We kindly ask that these seats are joyfully filled on the day of the event, so the heartfelt efforts and careful preparations of the bride and groom can be fully cherished. 😊<br><br>Looking forward to seeing you! 💖",
-    tl: "🎉 Maraming salamat! Naitala na po namin ang lahat ng {count}{plural}.<br><br>Inaasahan po namin na ang mga upuang ito ay masayang mapupuno sa araw ng kasal upang ang masusing paghahanda ng bride at groom ay tunay na mapahalagahan. 😊<br><br>Excited na po kaming makita kayo! 💖",
-    bis: "🎉 Daghang salamat! Among natala ang tanan {count}{plural}.<br><br>Nagpaabot mi nga malipayong mapuno ang mga lingkuranan sa adlaw sa kasal, aron ang gugma ug paningkamot sa bride ug groom mapanggaon gyud. 😊<br><br>Excited na kaayo mi makakita ninyo! 💖",
+    en: "🎉 Thank you! We've recorded {count} guest name{plural}.<br><br>We kindly ask that these seats are joyfully filled on the day of the event, so the heartfelt efforts and careful preparations of the bride and groom can be fully cherished. 😊<br><br>Looking forward to seeing you! 💖",
+    tl: "🎉 Maraming salamat! Naitala na po namin ang {count}{plural}.<br><br>Inaasahan po namin na ang mga upuang ito ay masayang mapupuno sa araw ng kasal upang ang masusing paghahanda ng bride at groom ay tunay na mapahalagahan. 😊<br><br>Excited na po kaming makita kayo! 💖",
+    bis: "🎉 Daghang salamat! Among natala ang {count}{plural}.<br><br>Nagpaabot mi nga malipayong mapuno ang mga lingkuranan sa adlaw sa kasal, aron ang gugma ug paningkamot sa bride ug groom mapanggaon gyud. 😊<br><br>Excited na kaayo mi makakita ninyo! 💖",
   },
   rsvpSaveError: {
     en: "⚠️ Something went wrong while saving your RSVP. Please try again later.",
@@ -151,14 +151,14 @@ const messages = {
       "👍 Naka-save na. {remaining} {seats} pa po ang bakante. Maaari pang magdagdag ng pangalan.",
       "📌 Noted! May {remaining} {seats} pang natitira. Sino pa po ang kasama ninyo?",
       "👌 Sige po! Inaasahan pa ang {remaining} pang bisita. Pakitype po ang pangalan.",
-      "📝 Ayos na! May {remaining} {seats} pa po. Ilagay na lang po ang pangalan kung sino pa ang kasama.",
+      "📝 Ayos! May {remaining} {seats} pa po. Ilagay na lang po ang pangalan kung sino pa ang kasama.",
     ],
     bis: [
       "✅ Nakuha na! Naay nabilin nga {remaining} ka {seats}. Palihug i-dugang ang pangalan.",
       "👍 Nasave na. {remaining} ka {seats} pa ang bakante. Kinsay sunod nga muapil?",
       "📌 Okay! {remaining} pa ka {seats} ang kuwang. Palihug sulati ang pangalan.",
       "👌 Salamat! Gipaabot pa nato ang {remaining} ka bisita. Isulat ilang ngalan.",
-      "📝 Kumpleto na ang record. Naa pay {remaining} ka {seats}. I-type lang ang sunod nga pangalan.",
+      "📝 Nice! Naa pay {remaining} ka {seats}. I-type lang ang sunod nga pangalan.",
     ],
   },
   seats: {
