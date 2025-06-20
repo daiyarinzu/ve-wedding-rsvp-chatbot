@@ -25,14 +25,14 @@ let selectedLang = "en"; // Default language
 // All bot messages in multiple languages
 const messages = {
   greeting: {
-    en: "💌 Greetings!\n\nYou are invited to the wedding of Voughn and Emelyn!\n\nBased on the number of seats shown in your electronic invitation, kindly tell us how many guest(s) will be attending. 😊",
-    tl: "💌 Kumusta!\n\nInaanyayahan ka sa kasal nina Voughn at Emelyn!\n\nBatay sa bilang ng upuan sa iyong imbitasyong digital, ilan po ang inaasahang dadalo? 😊",
-    bis: "💌 Kumusta!\n\nGiinbitahan ka sa kasal ni Voughn ug Emelyn!\n\nBase sa gidaghanon sa lingkuranan sa imong online na imbitasyon, pila kabuok ang moanhi? 😊",
+    en: "💌 Greetings!\n\nYou’re invited to the wedding of Voughn and Emelyn!\n\nBased on the number of seats indicated in your digital invitation, how many guests will be attending? 😊",
+    tl: "💌 Kumusta!\n\nInaanyayahan ka sa kasal nina Voughn at Emelyn!\n\nBatay sa bilang ng upuan sa iyong digital na imbitasyon, ilan po ang inaasahang dadalo? 😊",
+    bis: "💌 Kumusta!\n\nGiinbitahan ka sa kasal nila Voughn ug Emelyn!\n\nBase sa gidaghanon sa lingkuranan sa imong digital nga imbitasyon, pila kabuok ang moapil? 😊",
   },
   mustUseRSVPButton: {
     en: "Hi! To RSVP, please click the RSVP button on our website first so we can properly record your names. 😊",
-    tl: "Hi! Para makapag-RSVP, pakiclick muna ang RSVP button sa aming website para maitala namin nang maayos ang mga pangalan. 😊",
-    bis: "Hi! Para mag-RSVP, palihug i-click una ang RSVP button sa among website aron ma-record namo sakto ang inyong mga ngalan. 😊",
+    tl: "Hi! Para makapag-RSVP, pakiclick muna ang RSVP button sa aming website upang maitala nang maayos ang mga pangalan. 😊",
+    bis: "Hi! Para maka-RSVP, palihug i-click una ang RSVP button sa among website aron masakto namo ang paglista sa inyong mga ngalan. 😊  ",
   },
   seatCountConfirmed: {
     en: "Great! You may now RSVP up to {count} {guests}.",
@@ -44,19 +44,19 @@ const messages = {
       single:
         "Please reply with the guest's FULL name. 😊\n\n(sample: Juan P. Dela Cruz)",
       multiple:
-        "Please also note that I can only receive one name at a time, so please reply with the guests FULL names one by one. 😊\n\n(sample: Juan P. Dela Cruz)",
+        "Please also note that I can only receive one name at a time, so please reply with the guest's FULL names one by one. 😊\n\n(sample: Juan P. Dela Cruz)",
     },
     tl: {
       single:
         "Pakireply po ng BUONG pangalan ng bisita. 😊\n\n(Halimbawa: Juan P. Dela Cruz)",
       multiple:
-        "Pakitandaan din po na isang pangalan lang ang matatanggap ko sa bawat pagkakataon, kaya pakireply na lang po paisa-isa ang BUONG pangalan ng bawat bisita. 😊\n\n(Halimbawa: Juan P. Dela Cruz)",
+        "Pakitandaan din po na isang pangalan lang ang matatanggap ko sa bawat reply. Pakireply po nang paisa-isa gamit ang BUONG pangalan ng bawat bisita. 😊\n\n(Halimbawa: Juan P. Dela Cruz)",
     },
     bis: {
       single:
         "Palihug isulat ang KUMPLETONG ngalan sa bisita. 😊\n\n(Pananglitan: Juan P. Dela Cruz)",
       multiple:
-        "Palihug hinumdumi nga usa ka ngalan lang ang akong madawat sa usa ka hiagayon, busa isulat tag-isa ang KUMPLETONG ngalan sa matag bisita. 😊\n\n(Pananglitan: Juan P. Dela Cruz)",
+        "Palihug hinumdumi nga usa ka ngalan lang ang akong madawat matag reply. Palihug isulat tag-isa ang KUMPLETONG ngalan sa matag bisita. 😊\n\n(Pananglitan: Juan P. Dela Cruz)",
     },
   },
   guest: {
@@ -76,53 +76,53 @@ const messages = {
   },
   invalidName: {
     en: "Hmm... that doesn’t look like a valid name or a FULL name. Could you double-check and try again? 😊",
-    tl: "Hmm... parang hindi wasto ang pangalan o hindi BUO. Paki-check po ulit at subukang muli. 😊",
-    bis: "Hmm... murag dili tinuod o dili kumpleto ang pangalan. Palihug i-check ug usba. 😊",
+    tl: "Hmm... parang hindi wasto o hindi BUO ang pangalan. Pakisuri po ulit at subukang muli. 😊",
+    bis: "Hmm... murag dili sakto o KULANG ang pangalan. Palihug i-check ug suwayi usab. 😊",
   },
   duplicateName: {
     en: "🚫 That guest has already RSVP’d. Please enter other names. Thank you! 😊",
-    tl: "🚫 Nakapag-RSVP na po ang pangalang iyan. Pakilagay po ng ibang pangalan. Salamat! 😊",
-    bis: "🚫 Nakapa-RSVP na na nga ngalan. Palihug sulati ug laing ngalan. Salamat! 😊",
+    tl: "🚫 Naka-RSVP na po ang pangalang iyan. Pakilagay na lang po ng ibang pangalan. Salamat! 😊",
+    bis: "🚫 Nakapa-RSVP na na nga ngalan. Palihug sulati ug lain nga ngalan. Salamat! 😊",
   },
   allNamesCollected: {
-    en: '🎉 Thank you! Here are the name(s) you\'ve sent us:<br><br>{names}<br><br>Can you double check if everything is correct? Please reply "Yes" or "No".',
-    tl: '🎉 Salamat po! Narito ang mga pangalan na inyong ibinigay:<br><br>{names}<br><br>Pakisuri po kung tama lahat. Pakisagot ng "Tama" o "Mali".',
+    en: '🎉 Thank you! Here are the name(s) you\'ve sent us:<br><br>{names}<br><br>Can you please check if everything is correct? Please reply "Yes" or "No".',
+    tl: '🎉 Salamat po! Narito ang mga pangalan na inyong ibinigay:<br><br>{names}<br><br>Pakisuri po kung tama lahat. Paki-reply ng "Tama" o "Mali".',
     bis: '🎉 Salamat kaayo! Mao ni ang mga pangalan nga inyong gi-submit:<br><br>{names}<br><br>Palihug i-check kung sakto ba tanan. Tubaga lang og "Sakto" o "Dili".',
   },
   rsvpSaved: {
     en: "🎉 Thank you! We've recorded {count} guest name{plural}.<br><br>We kindly ask that these seats are joyfully filled on the day of the event, so the heartfelt efforts and careful preparations of the bride and groom can be fully cherished. 😊<br><br>Looking forward to seeing you! 💖",
-    tl: "🎉 Maraming salamat! Naitala na po namin ang {count}{plural}.<br><br>Inaasahan po namin na ang mga upuang ito ay masayang mapupuno sa araw ng kasal upang ang masusing paghahanda ng bride at groom ay tunay na mapahalagahan. 😊<br><br>Excited na po kaming makita kayo! 💖",
-    bis: "🎉 Daghang salamat! Among natala ang {count}{plural}.<br><br>Nagpaabot mi nga malipayong mapuno ang mga lingkuranan sa adlaw sa kasal, aron ang gugma ug paningkamot sa bride ug groom mapanggaon gyud. 😊<br><br>Excited na kaayo mi makakita ninyo! 💖",
+    tl: "🎉 Maraming salamat! Naitala na po namin ang {count}{plural}.<br><br>Inaasahan po naming masayang mapupuno ang mga upuang ito sa araw ng kasal upang mapahalagahan ang bawat paghahanda ng bride at groom. 😊<br><br>Excited na po kaming makita kayo! 💖",
+    bis: "🎉 Daghang salamat! Among natala ang {count}{plural}.<br><br>Naglaum mi nga malipayong mapuno ang mga lingkuranan sa adlaw sa kasal aron mapanggaon ang paningkamot sa bride ug groom. 😊<br><br>Excited na kaayo mi makakita ninyo! 💖",
   },
   rsvpSaveError: {
     en: "⚠️ Something went wrong while saving your RSVP. Please try again later.",
-    tl: "⚠️ Nagka-problema sa pag-save ng RSVP. Subukan ulit mamaya.",
-    bis: "⚠️ Naay problema sa pag-tipig sa RSVP. Palihug suwayi og balik unya.",
+    tl: "⚠️ Nagkaroon ng problema sa pag-save ng RSVP. Subukan ulit mamaya.",
+    bis: "⚠️ Naa'y problema sa pag-save sa imong RSVP. Palihug suwayi og balik unya.",
   },
   reenterNames: {
     en: "No problem! Please re-enter the names one by one. 😊",
-    tl: "Walang problema! Pakireply na lang po ulit ng mga pangalan paisa-isa. 😊",
-    bis: "Walay problema! Palihug isulat balik tag-isa ang mga ngalan. 😊",
+    tl: "Walang problema! Paki-reply na lang po ulit ng mga pangalan paisa-isa. 😊",
+    bis: "Walay problema! Palihug isulat pag usab ang mga ngalan tag-isa. 😊",
   },
   maxNamesReached: {
-    en: "✅ You've already added {count} {guests}. If you need to make changes, please message us directly. 😊",
-    tl: "✅ Naitala na ang {count} {guests}. Kung may babaguhin, pakimesahe na lang po kami. 😊",
-    bis: "✅ Nakadugang naka og {count} ka {guests}. Kung naay usbon, palihug i-message lang mi. 😊",
+    en: "✅ You've already added {count} {guests}. If you need to make changes, please message the bride and groom directly. 😊",
+    tl: "✅ Naitala na po ang {count} {guests}. Kung may babaguhin, pakimensahe na lang po ang bride at groom diretso. 😊",
+    bis: "✅ Nakadugang naka og {count} ka {guests}. Kung naay usbon, palihug i-message lang ang bride ug groom diretso. 😊",
   },
   idleCheckIn: {
     en: "👋 Just checking in — are you still there? You can keep adding names or reply 'No' to finish.",
-    tl: "👋 Kumusta? Nandiyan ka pa ba? Pwede ka pa magdagdag ng pangalan o mag-reply ng 'Hindi' para matapos.",
-    bis: "👋 Kumusta? Ania pa ba ka? Pwede pa ka magdugang og ngalan o mag-reply og 'Dili' para mahuman.",
+    tl: "👋 Kumusta po? Nandiyan pa ba kayo? Pwede pa kayong magdagdag ng pangalan o mag-reply ng 'Hindi' para matapos.",
+    bis: "👋 Kumusta? Ania pa ka? Pwede pa ka magdugang og ngalan o mag-reply og 'Dili' para mahuman.",
   },
   idleTimeout: {
     en: "⏱️ Looks like you're away. We'll end this RSVP session for now. You can start again anytime. 😊",
-    tl: "⏱️ Mukhang wala ka na. Tatapusin na namin ang RSVP session. Pwede kang magsimula ulit anumang oras. 😊",
-    bis: "⏱️ Murag wala naka. Tapuson na namo ang RSVP session karon. Pwede ka magsugod balik bisan kanus-a. 😊",
+    tl: "⏱️ Mukhang wala na po kayo. Tatapusin muna namin ang RSVP session. Pwede kayong magsimula ulit anumang oras. 😊",
+    bis: "⏱️ Murag wala naka. Among tapuson usa ang RSVP session. Pwede ka magsugod balik bisan kanus-a. 😊",
   },
   partialList: {
     en: "🎉 Thank you! Here are the name(s) you've sent us:<br><br>{names}<br><br>You still have {remaining} seat(s) left. Please enter {needed} or reply 'No' to finish.",
-    tl: "🎉 Salamat po! Narito ang mga pangalan na inyong ibinigay:<br><br>{names}<br><br>May natitira pa kayong {remaining} upuan. Pakienter na lang po ang {needed} o mag-reply ng 'Hindi' para matapos.",
-    bis: "🎉 Salamat kaayo! Mao ni ang mga pangalan nga inyong gi-submit:<br><br>{names}<br><br>Naay nabilin nga {remaining} ka lingkuranan. Palihug isulat ang {needed} o mag-reply og 'Dili' para mahuman.",
+    tl: "🎉 Salamat po! Narito ang mga pangalan na inyong ibinigay:<br><br>{names}<br><br>May natitira pa kayong {remaining} upuan. Paki-enter na lang po ang {needed} o mag-reply ng 'Hindi' para matapos.",
+    bis: "🎉 Salamat kaayo! Mao ni ang mga ngalan nga inyong gi-submit:<br><br>{names}<br><br>Naay pa moy nabilin nga {remaining} ka lingkuranan. Palihug isulat ang {needed} o mag-reply og 'Dili' para mahuman.",
   },
   moreNames: {
     en: {
@@ -147,16 +147,16 @@ const messages = {
       "📝 All set! {remaining} open {seats} to fill. Add another name when ready.",
     ],
     tl: [
-      "✅ Salamat! May natitira pa kayong {remaining} {seats}. Paki-enter na lang po ang karagdagang pangalan.",
+      "✅ Salamat po! May natitira pa kayong {remaining} {seats}. Paki-enter na lang po ang karagdagang pangalan.",
       "👍 Naka-save na. {remaining} {seats} pa po ang bakante. Maaari pang magdagdag ng pangalan.",
       "📌 Noted! May {remaining} {seats} pang natitira. Sino pa po ang kasama ninyo?",
-      "👌 Sige po! Inaasahan pa ang {remaining} pang bisita. Pakitype po ang pangalan.",
+      "👌 Sige po! Inaasahan pa po ang {remaining} pang bisita. Pakitype po ang pangalan.",
       "📝 Ayos! May {remaining} {seats} pa po. Ilagay na lang po ang pangalan kung sino pa ang kasama.",
     ],
     bis: [
-      "✅ Nakuha na! Naay nabilin nga {remaining} ka {seats}. Palihug i-dugang ang pangalan.",
-      "👍 Nasave na. {remaining} ka {seats} pa ang bakante. Kinsay sunod nga muapil?",
-      "📌 Okay! {remaining} pa ka {seats} ang kuwang. Palihug sulati ang pangalan.",
+      "✅ Nakuha na! Naay pa kay {remaining} ka {seats}. Palihug i-dugang ang ngalan.",
+      "👍 Nasave na. {remaining} ka {seats} pa ang bakante. Pwde pa ka magdugang ug ngalan",
+      "📌 Okay! {remaining} pa ka {seats} ang kuwang. Palihug i-reply ang ngalan.",
       "👌 Salamat! Gipaabot pa nato ang {remaining} ka bisita. Isulat ilang ngalan.",
       "📝 Nice! Naa pay {remaining} ka {seats}. I-type lang ang sunod nga pangalan.",
     ],
@@ -173,7 +173,7 @@ const messages = {
   },
   noRSVP: {
     en: "No problem! Let us know if you change your mind. 😊",
-    tl: "Walang problema! Sabihin lang po kung magbabago ang desisyon ninyo. 😊",
+    tl: "Walang problema! Sabihin niyo lang po kami kung magbabago ang desisyon ninyo. 😊",
     bis: "Walay problema! Ingna lang mi kung mausab imong huna-huna. 😊",
   },
 };
