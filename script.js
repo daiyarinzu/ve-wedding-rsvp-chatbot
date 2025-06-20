@@ -84,6 +84,11 @@ const messages = {
     tl: "🚫 Naka-RSVP na po ang pangalang iyan. Pakilagay na lang po ng ibang pangalan. Salamat! 😊",
     bis: "🚫 Nakapa-RSVP na na nga ngalan. Palihug sulati ug lain nga ngalan. Salamat! 😊",
   },
+  duplicateNameSession: {
+    en: "❌ You have already entered that guest's name. Please enter other names. Thank you! 😊",
+    tl: "❌ Mukhang naibigay n'yo na po ang pangalang iyan. Paki-type na lang po nang ibang pangalan. Salamat! 😊",
+    bis: "❌ Murag gisulti na nimo ang maong ngalan. Palihug hatagi mi ug laing pangalan sa bisita. Salamat! 😊",
+  },
   allNamesCollected: {
     en: '🎉 Thank you! Here are the name(s) you\'ve sent us:<br><br>{names}<br><br>Can you please check if everything is correct? Please reply "Yes" or "No".',
     tl: '🎉 Salamat po! Narito ang mga pangalan na inyong ibinigay:<br><br>{names}<br><br>Pakisuri po kung tama lahat. Paki-reply ng "Tama" o "Mali".',
@@ -681,6 +686,16 @@ async function respond(userText) {
     .trim()
     .toLowerCase()
     .replace(/\b\w/g, (char) => char.toUpperCase());
+
+  // Check for duplicates in current session
+  if (
+    guestNames
+      .map((n) => n.toLowerCase().trim())
+      .includes(formattedName.toLowerCase())
+  ) {
+    botReplyWithTyping(getMessage("duplicateNameSession"));
+    return;
+  }
 
   // Check for duplicates in storage
   if (!awaitingConfirmation) {
