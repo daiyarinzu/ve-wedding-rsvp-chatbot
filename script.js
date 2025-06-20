@@ -637,7 +637,7 @@ async function respond(userText) {
     }
 
     // Validate seat count
-    if (isNaN(seatCount) || seatCount < 1 || seatCount > 10) {
+    if (isNaN(seatCount) || seatCount < 1 || seatCount > 5) {
       botReplyWithTyping(getMessage("invalidSeatCount"));
     } else {
       maxSeats = seatCount;
