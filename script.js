@@ -682,10 +682,7 @@ async function respond(userText) {
   }
 
   // Format name for storage
-  const formattedName = userText
-    .trim()
-    .toLowerCase()
-    .replace(/\b\w/g, (char) => char.toUpperCase());
+  const formattedName = capitalizeName(userText);
 
   // Check for duplicates in current session
   if (
